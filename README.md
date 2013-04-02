@@ -49,6 +49,7 @@ dette var den konstruerte to-ukersperioden
 0.	NA
 1.	Kommentarfelt
 2.	Ikke kommentarfelt
+3.	
 antall kommentarfelt
 
 ###6.	Spørreundersøkelse
