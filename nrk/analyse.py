@@ -76,6 +76,9 @@ class Analyser:
                 page.links['internal'] += 1
             else:
                 page.links['external'] += 1
+
+        images = intro.find_all('img') + article.find_all('img')
+        page.images = len(images)
         return page
 
     def _analyse_new(url=None):
@@ -123,6 +126,9 @@ class Analyser:
                 page.links['internal'] += 1
             else:
                 page.links['external'] += 1
+
+        images = header.find_all('img') + body.find_all('img')
+        page.images = len(images)
         return page
 
     def analyse(url=None):
