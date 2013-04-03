@@ -3,8 +3,9 @@
 
 from bs4 import BeautifulSoup, Comment
 from argparse import ArgumentParser
-from urllib2 import build_opener
-from re import match
+from urllib2 import build_opener, unquote
+from re import match, search
+from itertools import izip
 
 class Page:
     def __init__(self, url=None):
@@ -51,6 +52,21 @@ class Analyser:
 		if search(published, 'Oppdatert'):
             page.updated['date'] = published[38:48]
             page.updated['time'] = published[49:54]
+
+        byline = soup.find('ul', 'byline')
+        for address in byline.find_all('address'):
+            author = Author()
+            author.name = address.span.string
+            # To find the mail we need to to do some unquoting
+            # as nrk is trying to protect the mail address
+            # from spammers behind a quoted string.
+            script = address.script.string
+            m = search(".*?'(.*)'.*$", script)
+            m = search(".*?'(.*)'.*$", unquote(m.group(1)))
+            html = BeautifulSoup(m.group(1))
+            author.email = html.a.string
+
+            page.authors.append(author)
         return page
 
     def _analyse_new(url=None):
@@ -74,6 +90,21 @@ class Analyser:
             updated = updated['title']
             page.updated['date'] = updated[:10]
             page.updated['time'] = updated[15:21]
+
+        byline = soup.find('div', 'byline')
+        # for some reason the mail is not connected to the
+        # name, but we can fix that.
+        for address, li in izip(byline.find_all('address'),
+                                byline.find_all('li', 'icon-mail')):
+            author = Author()
+            author.name = address.find(class_='fn').string
+            # NRK is still trying to hide the email address
+            # from spammers.
+            href = li.a['href']
+            author.mail = unquote(href[21:-1])[7:]
+            author.role = address.find(class_='role').string.strip()
+
+            page.authors.append(author)
         return page
 
     def analyse(url=None):
