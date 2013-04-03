@@ -42,6 +42,11 @@ class Analyser:
 
         intro = soup.find(class_='intro-element-article')
         page.title = intro.h1.text
+
+        # <p class="published">Publisert 15.05.2008 10:49. Oppdatert 15.05.2008 10:59.</p>
+        published = soup.find('p', 'published').string
+        page.published['date'] = published[10:20]
+        page.published['time'] = published[21:26]
         return page
 
     def _analyse_new(url=None):
@@ -55,6 +60,10 @@ class Analyser:
 
         article = soup.find('article')
         page.title = article.header.find('div', 'articletitle').h1.string
+
+        published = soup.find('div', 'published').find('span', 'publish-date')['title']
+        page.published['date'] = published[:10]
+        page.published['time'] = published[15:21]
         return page
 
     def analyse(url=None):
