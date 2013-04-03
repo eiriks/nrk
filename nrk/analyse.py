@@ -91,6 +91,10 @@ class Analyser:
         text += article.text
         text = split("\s+", text.strip())
         page.wc = len(text)
+
+        factbox = soup.find(class_='facts-right').text
+        page.fact_wc = len(split('\s+', factbox))
+
         return page
 
     def _analyse_new(url=None):
@@ -153,6 +157,10 @@ class Analyser:
         text += body.text
         text = split('\s+', text.strip())
         page.wc = len(text)
+
+        factbox = article.find(class_='fact')
+        page.fact_wc = split('\s+', factbox)
+
         return page
 
     def analyse(url=None):
