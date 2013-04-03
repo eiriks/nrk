@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 from urllib2 import build_opener, unquote
 from re import match, search
 from itertools import izip
+from tldextract import extract
 
 class Page:
     def __init__(self, url=None):
@@ -67,6 +68,14 @@ class Analyser:
             author.email = html.a.string
 
             page.authors.append(author)
+
+        article = soup.find(class_='article')
+        for link in intro.find_all('a') + article.find_all('a'):
+            domain = extract(link['href']).domain
+            if domain is 'nrk':
+                page.links['internal'] += 1
+            else:
+                page.links['external'] += 1
         return page
 
     def _analyse_new(url=None):
@@ -105,6 +114,15 @@ class Analyser:
             author.role = address.find(class_='role').string.strip()
 
             page.authors.append(author)
+
+        header = article.header
+        body = article.find(class_='articlebody')
+        for link in header.find_all('a') + body.find_all('a'):
+            domain = extract(link['href']).domain
+            if domain is 'nrk':
+                page.links['internal'] += 1
+            else:
+                page.links['external'] += 1
         return page
 
     def analyse(url=None):
