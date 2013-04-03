@@ -47,6 +47,10 @@ class Analyser:
         published = soup.find('p', 'published').string
         page.published['date'] = published[10:20]
         page.published['time'] = published[21:26]
+
+		if search(published, 'Oppdatert'):
+            page.updated['date'] = published[38:48]
+            page.updated['time'] = published[49:54]
         return page
 
     def _analyse_new(url=None):
@@ -64,6 +68,12 @@ class Analyser:
         published = soup.find('div', 'published').find('span', 'publish-date')['title']
         page.published['date'] = published[:10]
         page.published['time'] = published[15:21]
+
+        updated = soup.find('div', 'published').find('span', 'update-date')
+        if updated:
+            updated = updated['title']
+            page.updated['date'] = updated[:10]
+            page.updated['time'] = updated[15:21]
         return page
 
     def analyse(url=None):
