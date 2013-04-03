@@ -69,6 +69,10 @@ class Analyser:
 
             page.authors.append(author)
 
+        # The script tags need to be removed after finding the
+        # byline. The email is in a script tag here.
+        [script.extract() for script in soup.find_all('script')]
+
         article = soup.find(class_='article')
         for link in intro.find_all('a') + article.find_all('a'):
             domain = extract(link['href']).domain
@@ -79,6 +83,14 @@ class Analyser:
 
         images = intro.find_all('img') + article.find_all('img')
         page.images = len(images)
+
+        # Remove all images as they might appear in the
+        # .text otherwise.
+        [img.extract() for img in soup.find_all(img)]
+        text = intro.text
+        text += article.text
+        text = split("\s+", text.strip())
+        page.wc = len(text)
         return page
 
     def _analyse_new(url=None):
@@ -89,6 +101,10 @@ class Analyser:
         # We don't need the html comments so they are removed.
         comments = soup.findAll(text=lambda text:isinstance(text, Comment))
         [comment.extract() for comment in comments]
+        # The same with the script tags. Here we can remove
+        # at the beginning as the email has moved into a
+        # href instead of a script.
+        [script.extract() for script in soup.find_all('script')]
 
         article = soup.find('article')
         page.title = article.header.find('div', 'articletitle').h1.string
@@ -129,6 +145,14 @@ class Analyser:
 
         images = header.find_all('img') + body.find_all('img')
         page.images = len(images)
+
+        # Remove all images as they appear in the .text
+        # otherwise.
+        [img.extract() for img in soup.find_all(img)]
+        text = header.text
+        text += body.text
+        text = split('\s+', text.strip())
+        page.wc = len(text)
         return page
 
     def analyse(url=None):
