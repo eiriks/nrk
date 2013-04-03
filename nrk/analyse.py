@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding: utf-8
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from argparse import ArgumentParser
 from urllib2 import build_opener
 from re import match
@@ -30,16 +30,24 @@ class Analyser:
     def __init__(self):
         self.pagereader = build_opener()
         self.pagereader.addheaders(headers)
+
     def _analyse_old(url=None):
         doc = pagereader.open(url, None, 15)
         soup = BeautifulSoup(doc)
         page = Page(url)
+
+        #Remove all comments
+        comments = soup.findAll(text=lambda text:isinstance(text, Comment))
+        [comment.extract() for comment in comments]
         return page
 
     def _analyse_new(url=None):
         doc = pagereader.open(url, None, 15)
         soup = BeautifulSoup(doc)
         page = Page(url)
+        # We don't need the html comments so they are removed.
+        comments = soup.findAll(text=lambda text:isinstance(text, Comment))
+        [comment.extract() for comment in comments]
         return page
 
     def analyse(url=None):
