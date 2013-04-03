@@ -39,15 +39,22 @@ class Analyser:
         #Remove all comments
         comments = soup.findAll(text=lambda text:isinstance(text, Comment))
         [comment.extract() for comment in comments]
+
+        intro = soup.find(class_='intro-element-article')
+        page.title = intro.h1.text
         return page
 
     def _analyse_new(url=None):
         doc = pagereader.open(url, None, 15)
         soup = BeautifulSoup(doc)
         page = Page(url)
+
         # We don't need the html comments so they are removed.
         comments = soup.findAll(text=lambda text:isinstance(text, Comment))
         [comment.extract() for comment in comments]
+
+        article = soup.find('article')
+        page.title = article.header.find('div', 'articletitle').h1.string
         return page
 
     def analyse(url=None):
