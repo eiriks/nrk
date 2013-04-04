@@ -90,3 +90,7 @@ class  NewPageAnalyser(Analyser):
         if fb:
             return len(split(r'\s+', fb))
         return
+
+    def news_agency(self):
+        em = self.soup.select("p > em")[0]
+        return em.text.replace('(', '').replace(')', '') if em else None

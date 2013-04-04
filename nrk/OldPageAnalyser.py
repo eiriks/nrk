@@ -90,3 +90,7 @@ class OldPageAnalyser(Analyser):
         if factbox:
             return len(split(r'\s+', factbox))
         return
+
+    def news_agency(self):
+        cite = soup.select('div > cite')[0]
+        return cite.text.replace('(', '').replace(')', '') if cite else None

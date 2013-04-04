@@ -121,3 +121,10 @@ class Analyser(object):
 
         """
         return
+
+    def news_agency(self):
+        """
+        Returns the name of the news agency that the article
+        was bought from if applicable.
+
+        """
