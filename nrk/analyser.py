@@ -8,6 +8,20 @@ class Author:
         self.email = None
         self.role = None
 
+    def __eq__(self, other):
+        if isinstance(other, Author):
+            return (self.name == other.name and
+                    self.email == other.email and
+                    self.role == other.role)
+        return NotImplemented
+
+    def __ne__(self, other):
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+
 class Analyser(object):
     __metaclass__ = ABCMeta
 
