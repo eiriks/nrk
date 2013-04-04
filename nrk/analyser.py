@@ -11,18 +11,21 @@ class Author:
 class Analyser(object):
     __metaclass__ = ABCMeta
 
-    def headers = [('User-agent',
-                    'UiB NRK Proj (Contact: Eirik.Stavelin@infomedia.uib.no)')]
-
     def __init__(self, url):
+        self._url = url
+
         self.pagereader = build_opener()
-        self.pagereader.addheaders(headers)
-        doc = pagereader.open(url, None, 15)
+        self.pagereader.addheaders = [('User-agent',
+                                       'UiB NRK Proj (Contact: Eirik.Stavelin@infomedia.uib.no)')]
+        doc = self.pagereader.open(url, None, 15)
         self.soup = BeautifulSoup(doc)
 
         #Remove all comments
-        comments = soup.findAll(text=lambda text:isinstance(text, Comment))
+        comments = self.soup.find_all(text=lambda text:isinstance(text, Comment))
         [comment.extract() for comment in comments]
+
+        noscripts = self.soup.find_all('noscript')
+        [noscript.extract() for noscript in noscripts]
 
     @abstractmethod
     def url(self):
