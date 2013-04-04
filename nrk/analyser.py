@@ -134,3 +134,9 @@ class Analyser(object):
         Returns the number of videos in the article.
 
         """
+
+    def comment_fields(self):
+        """
+        Returns the number of comment fields.
+
+        """

@@ -99,3 +99,7 @@ class OldPageAnalyser(Analyser):
         vids = article.find_all('div', 'video') + intro.find_all('div', 'video')
 
         return len(vids)
+
+    def comment_field(self):
+        comments = self.soup.find_all(id='disqusarticlecomments')
+        return len(comments)

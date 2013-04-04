@@ -100,3 +100,7 @@ class  NewPageAnalyser(Analyser):
         intro = self.soup.find(class_='intro-element-article')
         vids = article.find_all(class_='video-hud') + intro.find_all(class_='video-hud'))
         return len(vids)
+
+    def comment_fields(self):
+        comments = self.soup.find_all(class_='comment-thread-message')
+        return len(comments)
