@@ -87,9 +87,7 @@ class OldPageAnalyser(Analyser):
 
     def factbox(self):
         factbox = self.soup.find(class_='facts-right')
-        if factbox:
-            return len(split(r'\s+', factbox))
-        return
+        return len(split(r'\s+', factbox)) if factbox else None
 
     def news_agency(self):
         cite = soup.select('div > cite')[0]

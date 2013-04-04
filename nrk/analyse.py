@@ -25,8 +25,13 @@ def analyse(url=None):
     else:
         return NewPageAnalyser(url)
 
-if __name__ == '__main__':
+def main():
     parser = ArgumentParser(description='Analyse nrk url.')
     parser.add_argument('url', metavar='URL')
     args = parser.parse_args()
-    analyse(url=args.url.strip())
+    analyser = analyse(url=args.url.strip())
+
+
+
+if __name__ == '__main__':
+    main()
