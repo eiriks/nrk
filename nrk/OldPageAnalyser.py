@@ -92,3 +92,10 @@ class OldPageAnalyser(Analyser):
     def news_agency(self):
         cite = soup.select('div > cite')[0]
         return cite.text.replace('(', '').replace(')', '') if cite else None
+
+    def videos(self):
+        article = self.soup.find(class_='article')
+        intro = self.soup.find(class_='intro-element-article')
+        vids = article.find_all('div', 'video') + intro.find_all('div', 'video')
+
+        return len(vids)

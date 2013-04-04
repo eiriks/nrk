@@ -94,3 +94,9 @@ class  NewPageAnalyser(Analyser):
     def news_agency(self):
         em = self.soup.select("p > em")[0]
         return em.text.replace('(', '').replace(')', '') if em else None
+
+    def videos(self):
+        article = self.soup.find(class_='article')
+        intro = self.soup.find(class_='intro-element-article')
+        vids = article.find_all(class_='video-hud') + intro.find_all(class_='video-hud'))
+        return len(vids)

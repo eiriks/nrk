@@ -128,3 +128,9 @@ class Analyser(object):
         was bought from if applicable.
 
         """
+
+    def videos(self):
+        """
+        Returns the number of videos in the article.
+
+        """
