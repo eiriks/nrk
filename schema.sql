@@ -4,6 +4,10 @@
 
 */
 
+DROP TABLE IF EXISTS author_page;
+DROP TABLE IF EXISTS author;
+DROP TABLE IF EXISTS page;
+
 
 CREATE TABLE IF NOT EXISTS author (
        author_id INTEGER PRIMARY KEY ASC,
