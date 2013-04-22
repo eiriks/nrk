@@ -221,3 +221,9 @@ facebook dele
 twitter
 g+
 
+
+### Målform:
+nn / nb 
+bruk kode her: https://github.com/saffsd/langid.py 
+funker overraskende bra.
+
