@@ -5,11 +5,17 @@ Kode til automatisert innholdsanalyse av nrk.no
 
 
 ## Grunnleggende idé
-Basert på en liste med URLer henter vi ut info om hver tekst. Vi sparer på elementene i kodeboken i en database. Overskfrit, ingress, brødtekst osv, alt lagres som i en rad i en stor tabell. Ved siste korsvei holdt vi alt i en tabell (ingen relasjoner), mens det nok er hensiktsmessig å legge til noen relasjoner her og der.
 
-Hva vi henter ut er basert på kodeboken (som er designet for å besvare et sett forskningsspørsmål).
-Det er ok å legge til flere variabler der vi ser en gevinst og liten kostnad.
- 
+Basert på en liste med URLer henter vi ut info om hver tekst. Vi
+sparer på elementene i kodeboken i en database. Overskfrit, ingress,
+brødtekst osv, alt lagres som i en rad i en stor tabell. Ved siste
+korsvei holdt vi alt i en tabell (ingen relasjoner), mens det nok er
+hensiktsmessig å legge til noen relasjoner her og der.
+
+Hva vi henter ut er basert på kodeboken (som er designet for å besvare
+et sett forskningsspørsmål). Det er ok å legge til flere variabler der
+vi ser en gevinst og liten kostnad.
+
 
 
 ## Kodebok
@@ -21,9 +27,9 @@ DATASETT: N= XXXXX
 ###1.	Publiseringsdato (14 dager)
 dette var den konstruerte to-ukersperioden
 
-0.	Mandag 19 januar 	
-1.	Tirsdag 27 januar 
-2.	Onsdag 11 februar 
+0.	Mandag 19 januar
+1.	Tirsdag 27 januar
+2.	Onsdag 11 februar
 3.	Torsdag 12 mars
 4.	Fredag 24 april
 5.	Lørdag 16 mai
@@ -34,50 +40,49 @@ dette var den konstruerte to-ukersperioden
 10.	Torsdag 15 oktober
 11.	Fredag 13 november
 12.	Lørdag 5 desember
-13.	Søndag 20 desember 
+13.	Søndag 20 desember
 
 
-###1.	Publiseringsdato (hele 2009)
+### 1.	Publiseringsdato (hele 2009)
 
-###2.	Klokkeslett
+### 2.	Klokkeslett
 
-###3.	Oppdateringstidspunkt
+### 3.	Oppdateringstidspunkt
 
-###4.	Interaktive element (antall)
+### 4.	Interaktive element (antall)
 
-###5.	Kommentarfelt
+### 5.	Kommentarfelt
 0.	NA
 1.	Kommentarfelt
 2.	Ikke kommentarfelt
-3.	
-antall kommentarfelt
+3.	antall kommentarfelt
 
-###6.	Spørreundersøkelse
+### 6.	Spørreundersøkelse
 0.	NA
 1.	Spørreundersøkelse
 2.	Ikke spørreundersøkelse
 3.	Flere spørreundersøkelser
 
-###7.	Spillelement
+### 7.	Spillelement
 0.	NA
 1.	Spillelement
 2.	Ikke spillelement
 3.	Flere spillelement
 
-###8.	Egentesting
+### 8.	Egentesting
 0.	NA
 1.	Egentest
 2.	Ikke egentest
 3.	Flere egentester
 
-###9.	Videofil
+### 9.	Videofil
 0.	NA
 1.	Flashfil
 2.	Ikke flashfil
 3.	Flere flashfiler
 Er videoen fra nrk? (egenproduksjon)
 
-###10.	Bildekarusell	
+### 10.	Bildekarusell
 0.	NA
 1.	Bildekarusell
 2.	Ikke bildekarusell
@@ -85,20 +90,20 @@ Er videoen fra nrk? (egenproduksjon)
 
 
 
-###11.	Galleriboks aka. Relaterte saker
+### 11.	Galleriboks aka. Relaterte saker
 0.	NA
 1.	Galleriboks
 2.	Ikke galleriboks
 3.	Flere galleribokser
 
-###12.	Flashfil
+### 12.	Flashfil
 
 	0. 	NA
 	1.	Flashfil
 	2.	Ikke flashfil
 	3.	Flere flashfiler
 
-###13. 	Andre interaktive element
+### 13.	Andre interaktive element
 
 	0. 	NA
 	1.	Annet interaktivt element
@@ -145,7 +150,7 @@ antall eksterne
 4.	Norgesglasset
 5.	Migrapolis
 6.	Radiodokumentaren
-7.	Schrödingers katt 
+7.	Schrödingers katt
 8.	Studio Sokrates
 9.	P2 Akademiet
 10.	Newton
@@ -189,9 +194,9 @@ antall eksterne
 3 = Reuters
 4 = AP
 5 = AFP
-6 = NRK 
+6 = NRK
 7 = Andre byråer
- 8 = Flere byråer  
+ 8 = Flere byråer
 
 ###22.	Les/Les også
 0.	NA
@@ -220,6 +225,7 @@ facebook (like)
 facebook dele
 twitter
 g+
+<<<<<<< HEAD
 
 
 ### Målform:
@@ -227,3 +233,5 @@ nn / nb
 bruk kode her: https://github.com/saffsd/langid.py 
 funker overraskende bra.
 
+=======
+>>>>>>> temoprary-branch
