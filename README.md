@@ -110,22 +110,24 @@ Er videoen fra nrk? (egenproduksjon)
 	2.	Ikke annet interaktivt element
 	3.	Flere andre interaktive element
 
-###14.	Ordtelling
+### 14.	Ordtelling
 all tekst (overskrift, ingress, bildetekster m.m.)
-lix # se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
+
+### lix Lesbarhetsindex-tall 
+Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
 
 
-###15.	Lenker (antall)
-antall interne
-antall eksterne
+### 15.	Lenker (antall)
+- sum interne og eksterne
 
-###16.	Lenkepraksis
+
+### 16.	Lenkepraksis
 0.	NA
 1.	Interne lenker
 2.	Eksterne lenker
 3.	Både interne og eksterne lenker
 
-###17.	Publiseringssted
+### 17.	Publiseringssted
 0.	NA
 1.	NRK Riks
 2.	NRK Hedmark og Oppland
@@ -142,7 +144,7 @@ antall eksterne
 13.	NRK Østlandssendingen
 14.	NRK Samí Radio
 
-###18.	Programtilknytning
+### 18.	Programtilknytning
 0.	NA
 1.	Puls
 2.	Forbrukerinspektørene FBI
@@ -162,7 +164,7 @@ antall eksterne
 16.	Vær (yr.no/nyhende)
 17.	 Lydverket
 
-###19.	NRKs hovedkategorier nyheter
+### 19.	NRKs hovedkategorier nyheter
 0.	NA
 1.	Forsiden
 2.	Norge
@@ -174,7 +176,7 @@ antall eksterne
 8.	Teknologi og vitenskap (katta)
 9.	 Vær (yr)
 
-###20.	NRKs nyhetskategorier
+### 20.	NRKs nyhetskategorier
 0.	NA
 1.	Siste nytt
 2.	Norge
@@ -205,33 +207,31 @@ antall eksterne
 
 
 ###23 Faktaboks
-antall ord
+- ja/nei
+- antall ord i faktaboks
 
-###24 Byline
-Navn
-tittel
-epost
+### 24 Byline
+- Navn
+- tittel
+- epost
 
 
-###25 Bilder
-antall
+### 25 Bilder
+- antall
 
-###26 Kart
-antall
-lat/long
+### 26 Kart
+- antall
+- lat/long
 
-###Deling
-facebook (like)
-facebook dele
-twitter
-g+
-<<<<<<< HEAD
+### Deling
+- facebook (like)
+- facebook dele
+- twitter
+- g+
+
 
 
 ### Målform:
-nn / nb 
+- nn / nb 
 bruk kode her: https://github.com/saffsd/langid.py 
 funker overraskende bra.
-
-=======
->>>>>>> temoprary-branch
