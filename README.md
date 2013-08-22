@@ -22,34 +22,42 @@ vi ser en gevinst og liten kostnad.
 
 AUTOMATISERT INNHOLDSANALYSE
 
-DATASETT: N= XXXXX
-
-###1.	Publiseringsdato (14 dager)
-dette var den konstruerte to-ukersperioden
-
-0.	Mandag 19 januar
-1.	Tirsdag 27 januar
-2.	Onsdag 11 februar
-3.	Torsdag 12 mars
-4.	Fredag 24 april
-5.	Lørdag 16 mai
-6.	Søndag 21 juni
-7.	Mandag 13 juli
-8.	Tirsdag 18 august
-9.	Onsdag 16 september
-10.	Torsdag 15 oktober
-11.	Fredag 13 november
-12.	Lørdag 5 desember
-13.	Søndag 20 desember
+DATASETT: N=alt
 
 
-### 1.	Publiseringsdato (hele 2009)
+* fulltekst (hele saken, med unntak av helementer (tittel, forfatter, etc) som lagres i andre felt.)
 
-### 2.	Klokkeslett
+* Publiseringsdato (date)
 
-### 3.	Oppdateringstidspunkt
+* Klokkeslett (datetime)
 
-### 4.	Interaktive element (antall)
+* Oppdateringstidspunkt (datetime)
+
+* Interaktive element (antall, int)
+
+*  tekstlengde: Antall ord (all tekst - overskrift, ingress, bildetekster m.m.)
+
+* lix Lesbarhetsindex-tall 
+Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
+
+* Nyhetsbyrå
+{
+	0 : NA
+	1 : NTB
+	2 : ANB
+	3 : Reuters
+	4 : AP
+	5 : AFP
+	6 : NRK
+	7 : Andre byråer
+	8 : Flere byråer	
+}
+
+* Målform: nn || nb || annet? 
+bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
+
+
+
 
 ### 5.	Kommentarfelt
 0.	NA
@@ -69,7 +77,7 @@ dette var den konstruerte to-ukersperioden
 2.	Ikke spillelement
 3.	Flere spillelement
 
-### 8.	Egentesting
+### 8.	Egentesting (poll)
 0.	NA
 1.	Egentest
 2.	Ikke egentest
@@ -80,7 +88,7 @@ dette var den konstruerte to-ukersperioden
 1.	Flashfil
 2.	Ikke flashfil
 3.	Flere flashfiler
-Er videoen fra nrk? (egenproduksjon)
+* Er videoen fra nrk? (egenproduksjon)
 
 ### 10.	Bildekarusell
 0.	NA
@@ -109,12 +117,6 @@ Er videoen fra nrk? (egenproduksjon)
 	1.	Annet interaktivt element
 	2.	Ikke annet interaktivt element
 	3.	Flere andre interaktive element
-
-### 14.	Ordtelling
-all tekst (overskrift, ingress, bildetekster m.m.)
-
-### lix Lesbarhetsindex-tall 
-Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
 
 
 ### 15.	Lenker (antall)
@@ -189,16 +191,7 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 9.	Kultur
 10.	Sport
 
-###21.	Nyhetsbyrå
-0 = NA
-1 = NTB
-2 =  ANB
-3 = Reuters
-4 = AP
-5 = AFP
-6 = NRK
-7 = Andre byråer
- 8 = Flere byråer
+
 
 ###22.	Les/Les også
 0.	NA
@@ -231,7 +224,25 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 
 
 
-### Målform:
-- nn / nb 
-bruk kode her: https://github.com/saffsd/langid.py 
-funker overraskende bra.
+
+
+
+
+# Gammelt rusk:
+###1.	Publiseringsdato (14 dager)
+dette var den konstruerte to-ukersperioden
+
+0.	Mandag 19 januar
+1.	Tirsdag 27 januar
+2.	Onsdag 11 februar
+3.	Torsdag 12 mars
+4.	Fredag 24 april
+5.	Lørdag 16 mai
+6.	Søndag 21 juni
+7.	Mandag 13 juli
+8.	Tirsdag 18 august
+9.	Onsdag 16 september
+10.	Torsdag 15 oktober
+11.	Fredag 13 november
+12.	Lørdag 5 desember
+13.	Søndag 20 desember
