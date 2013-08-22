@@ -169,8 +169,12 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 }
  ```
 
-* interne lenkerLenker (antall)
+* interne lenker (antall)
+
 * eksterne lenker (antall)
+
+#### Skulle vi også ha lagret nettverket av hvem som lenker hvem?
+Eller lagre root domenene som lenkes? Eller lenkens geografiske tilhørighet? 
 
 
 * Publiseringssted (disse henter vi ut i fra URL'n)
@@ -233,7 +237,8 @@ Hentes ut i fra URL
 	6.	Kultur og underholdning
 	7.	Helse og livsstil (puls)
 	8.	Teknologi og vitenskap (katta)
-	9.	 Vær (yr)
+	9.	Vær (yr.no)
+	10. ut.no
 }
  ```
 
