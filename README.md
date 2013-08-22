@@ -41,6 +41,7 @@ DATASETT: N=alt
 Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
 
 * Nyhetsbyrå
+ ```python
 {
 	0 : NA
 	1 : NTB
@@ -52,7 +53,7 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 	7 : Andre byråer
 	8 : Flere byråer	
 }
-
+ ```
 * Målform: nn || nb || annet? 
 bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 
