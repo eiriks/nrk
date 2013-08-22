@@ -173,7 +173,7 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 
 * eksterne lenker (antall)
 
-#### Skulle vi også ha lagret nettverket av hvem som lenker hvem?
+Skulle vi også ha lagret nettverket av hvem som lenker hvem?
 Eller lagre root domenene som lenkes? Eller lenkens geografiske tilhørighet? 
 
 
