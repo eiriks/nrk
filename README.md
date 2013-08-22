@@ -222,6 +222,8 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 - twitter
 - g+
 
+### Skal vi lagre all html noe sted, slik at vi ikke trenger å pinge nrk enda en gang hvis vi finner ut at vi vill hente ut flere eller andre ting, eller hente ut på andre måter?
+
 
 
 
