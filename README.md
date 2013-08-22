@@ -41,6 +41,7 @@ DATASETT: N=alt
 Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
 
 * Nyhetsbyrå
+
  ```python
 {
 	0 : NA
@@ -54,174 +55,254 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 	8 : Flere byråer	
 }
  ```
-* Målform: nn || nb || annet? 
+* Målform: nn || nb || annen_språkkode? 
 bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 
 
 
+* Kommentarfelt
+ ```python
+{
+	0.	NA
+	1.	Kommentarfelt
+	2.	Ikke kommentarfelt
+}
+ ```
 
-### 5.	Kommentarfelt
-0.	NA
-1.	Kommentarfelt
-2.	Ikke kommentarfelt
-3.	antall kommentarfelt
+* Spørreundersøkelse
+ ```python
+{
+	0.	NA
+	1.	Spørreundersøkelse
+	2.	Ikke spørreundersøkelse
+	3.	Flere spørreundersøkelser
+}
+ ```
+* antall spørreundersøkelser (er dette nødvendig?)
 
-### 6.	Spørreundersøkelse
-0.	NA
-1.	Spørreundersøkelse
-2.	Ikke spørreundersøkelse
-3.	Flere spørreundersøkelser
+* Spillelement
+ ```python
+{
+	0.	NA
+	1.	Spillelement
+	2.	Ikke spillelement
+	3.	Flere spillelement
+}
+ ```
 
-### 7.	Spillelement
-0.	NA
-1.	Spillelement
-2.	Ikke spillelement
-3.	Flere spillelement
+* antall spillelement (er dette nødvendig?)
 
-### 8.	Egentesting (poll)
-0.	NA
-1.	Egentest
-2.	Ikke egentest
-3.	Flere egentester
+* Egentesting (poll)
+ ```python
+{
+	0.	NA
+	1.	Egentest
+	2.	Ikke egentest
+	3.	Flere egentester
+}
+ ```
 
-### 9.	Videofil
-0.	NA
-1.	Flashfil
-2.	Ikke flashfil
-3.	Flere flashfiler
-* Er videoen fra nrk? (egenproduksjon)
+* Videofil
+ ```python
+{
+	0.	NA
+	1.	Flashfil
+	2.	Ikke flashfil
+	3.	Flere flashfiler
+}
+ ```
 
-### 10.	Bildekarusell
-0.	NA
-1.	Bildekarusell
-2.	Ikke bildekarusell
-3.	Flere bildekaruseller
+* Antall videofiler totalt (inkludere vimeo, youtube, osv)
+
+* Antall videofiler fra NRK (egenproduksjon)
 
 
+* Bildekarusell
+ ```python
+{
+	0.	NA
+	1.	Bildekarusell
+	2.	Ikke bildekarusell
+	3.	Flere bildekaruseller
+}
+ ```
 
-### 11.	Galleriboks aka. Relaterte saker
-0.	NA
-1.	Galleriboks
-2.	Ikke galleriboks
-3.	Flere galleribokser
 
-### 12.	Flashfil
+*	Galleriboks aka. Relaterte saker
+ ```python
+{
+	0.	NA
+	1.	Galleriboks
+	2.	Ikke galleriboks
+	3.	Flere galleribokser
+}
+ ```
 
+*	Flashfil 
+ ```python
+{
 	0. 	NA
 	1.	Flashfil
 	2.	Ikke flashfil
 	3.	Flere flashfiler
+}
+ ```
 
-### 13.	Andre interaktive element
-
+*	Andre interaktive element
+ ```python
+{
 	0. 	NA
 	1.	Annet interaktivt element
 	2.	Ikke annet interaktivt element
 	3.	Flere andre interaktive element
+}
+ ```
 
 
-### 15.	Lenker (antall)
-- sum interne og eksterne
+*	Lenkepraksis
+ ```python
+{
+	0.	NA
+	1.	Interne lenker
+	2.	Eksterne lenker
+	3.	Både interne og eksterne lenker
+}
+ ```
+
+* interne lenkerLenker (antall)
+* eksterne lenker (antall)
 
 
-### 16.	Lenkepraksis
-0.	NA
-1.	Interne lenker
-2.	Eksterne lenker
-3.	Både interne og eksterne lenker
+* Publiseringssted (disse henter vi ut i fra URL'n)
+ ```python
+{
+	0.	NA
+	1.	NRK Riks
+	2.	NRK Hedmark og Oppland
+	3.	NRK Hordaland
+	4.	NRK Møre og Romsdal
+	5.	NRK Nordland
+	6.	NRK Rogaland
+	7.	NRK Sogn og Fjordane
+	8.	NRK Sørlandet
+	9.	NRK Troms og Finnmark
+	10.	NRK Trøndelag
+	11.	NRK Østafjells
+	12.	NRK Østfold
+	13.	NRK Østlandssendingen
+	14.	NRK Samí Radio
+}
+ ```
+*	Programtilknytning
+Dette henter vi ut i fra URL'n. Er det flere vi burde se etter?
+ ```python
+{
+	0.	NA
+	1.	Puls
+	2.	Forbrukerinspektørene FBI
+	3.	Juntafil
+	4.	Norgesglasset
+	5.	Migrapolis
+	6.	Radiodokumentaren
+	7.	Schrödingers katt
+	8.	Studio Sokrates
+	9.	P2 Akademiet
+	10.	Newton
+	11.	Kurer
+	12.	Kunstreisen
+	13.	Nitimen
+	14.	P3.no (flere programmer)
+	15.	 Spiller.no
+	16.	Vær (yr.no/nyhende)
+	17.	 Lydverket
+	18. Valg
+	19. BarneTV aka nrksuper
+}
+ ```
 
-### 17.	Publiseringssted
-0.	NA
-1.	NRK Riks
-2.	NRK Hedmark og Oppland
-3.	NRK Hordaland
-4.	NRK Møre og Romsdal
-5.	NRK Nordland
-6.	NRK Rogaland
-7.	NRK Sogn og Fjordane
-8.	NRK Sørlandet
-9.	NRK Troms og Finnmark
-10.	NRK Trøndelag
-11.	NRK Østafjells
-12.	NRK Østfold
-13.	NRK Østlandssendingen
-14.	NRK Samí Radio
+* NRKs hovedkategorier nyheter
+Hentes ut i fra URL
+ ```python
+{
+	0.	NA
+	1.	Forsiden
+	2.	Norge
+	3.	Verden
+	4.	Økonomi
+	5.	Sport
+	6.	Kultur og underholdning
+	7.	Helse og livsstil (puls)
+	8.	Teknologi og vitenskap (katta)
+	9.	 Vær (yr)
+}
+ ```
 
-### 18.	Programtilknytning
-0.	NA
-1.	Puls
-2.	Forbrukerinspektørene FBI
-3.	Juntafil
-4.	Norgesglasset
-5.	Migrapolis
-6.	Radiodokumentaren
-7.	Schrödingers katt
-8.	Studio Sokrates
-9.	P2 Akademiet
-10.	Newton
-11.	Kurer
-12.	Kunstreisen
-13.	Nitimen
-14.	P3.no (flere programmer)
-15.	 Spiller.no
-16.	Vær (yr.no/nyhende)
-17.	 Lydverket
-
-### 19.	NRKs hovedkategorier nyheter
-0.	NA
-1.	Forsiden
-2.	Norge
-3.	Verden
-4.	Økonomi
-5.	Sport
-6.	Kultur og underholdning
-7.	Helse og livsstil (puls)
-8.	Teknologi og vitenskap (katta)
-9.	 Vær (yr)
-
-### 20.	NRKs nyhetskategorier
-0.	NA
-1.	Siste nytt
-2.	Norge
-3.	Verden
-4.	Økonomi
-5.	Nobels fredspris
-6.	Klima
-7.	Distrikt
-8.	Valg 09
-9.	Kultur
-10.	Sport
-
-
-
-###22.	Les/Les også
-0.	NA
-1.	Les/Les også
-2.	Ikke Les/Les også
-
-
-###23 Faktaboks
-- ja/nei
-- antall ord i faktaboks
-
-### 24 Byline
-- Navn
-- tittel
-- epost
+* NRKs nyhetskategorier
+Hentes fra URL
+ ```python
+{
+	0.	NA
+	1.	Siste nytt
+	2.	Norge
+	3.	Verden
+	4.	Økonomi
+	5.	Nobels fredspris
+	6.	Klima
+	7.	Distrikt
+	8.	Valg 09 / Valg2012?
+	9.	Kultur
+	10.	Sport
+}
+ ```
 
 
-### 25 Bilder
-- antall
+* Les/Les også
+Dette er en kontekstboks i den gamle designmalen (finnes dette i den nye?)
+ ```python
+{
+	0.	NA
+	1.	Les/Les også
+	2.	Ikke Les/Les også
+}
+ ```
 
-### 26 Kart
-- antall
-- lat/long
+* Faktaboks
+ ```python
+{
+	0.	NA
+	1.	Ja
+	2.	Nei
+}
+ ```
 
-### Deling
-- facebook (like)
-- facebook dele
-- twitter
-- g+
+* antall faktabokser (finnes det eksempler der det er flere?)
+
+* antall ord i faktaboks(er)
+
+* Byline
+OBS: En tekst kan ha flere forfattere
+  - Navn
+  - tittel
+  - epost
+
+
+* Bilder (antall)
+
+
+* Deling facebook "like" (ja/nei)
+
+* Deling facebook "share" (ja/nei)
+
+* Deling twitter (ja/nei)
+
+* Deling g+ (ja/nei)
+
+* Deling annet (hvordan skal dette operasjonalliseres)
+
+
+* Kart (antall)
+  - antall
+  - lat/long
 
 ### Skal vi lagre all html noe sted, slik at vi ikke trenger å pinge nrk enda en gang hvis vi finner ut at vi vill hente ut flere eller andre ting, eller hente ut på andre måter?
 
