@@ -178,6 +178,7 @@ Eller lagre root domenene som lenkes? Eller lenkens geografiske tilhørighet?
 
 
 * Publiseringssted (disse henter vi ut i fra URL'n)
+
  ```python
 {
 	0.	NA
