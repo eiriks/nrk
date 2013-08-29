@@ -24,7 +24,11 @@ AUTOMATISERT INNHOLDSANALYSE
 
 DATASETT: N=alt
 
+#### SQL-tabell
+Vi forsøker å gjøre hovedtabellen så semantisk meningsfull som mulig, da denne skal deles med andre forskere som skal kode manuellt. Likevell så trenger vi å beskrive m2n relasjoner på noen variabler: lenker & forfatter. Da trenger vi i alle fall tabellene: 'artikkel_tbl', 'lenker_tbl', 'artikkel_har_lenke_tbl',  'artikkel_har_forfatter_tbl'. (da forfattere kan bytte tittel/stilling har vi ingen egen ren forfattertabell) Høres dette lurt ut, Haakon?
 
+
+### Variabler
 * fulltekst (hele saken, med unntak av delelemener (tittel, forfatter, etc) som lagres i andre felt.)
 
 * Publiseringsdato (date)
@@ -49,8 +53,18 @@ DATASETT: N=alt
 
 * Deling annet (hvordan skal dette operasjonalliseres)
 
-* Målform: nn || nb || annen_språkkode? 
-bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
+* Byline (m2n, egen tabell)
+  - Navn
+  - tittel
+  - epost (ikke stress med dette hvis js skaper trøbbel)
+
+* Målform: 
+ ```python
+{
+	NA || nn || nb || annen_språkkode? 
+}
+ ```
+Bruk denne: https://github.com/saffsd/langid.py funker overraskende bra!
 
 * LIX Lesbarhetsindex-tall 
 Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
@@ -79,13 +93,6 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
  ```
 
 * antall ord i faktaboks(er)
-
-
-* Byline (m2n, egen tabell)
-  - Navn
-  - tittel
-  - epost (ikke stress med dette hvis js skaper trøbbel)
-
 
 * Kommentarfelt
  ```python
