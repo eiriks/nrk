@@ -61,6 +61,24 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 
 * bildetekst (konkatinert ved flere bilder, formodentlig)
 
+* Faktaboks
+ ```python
+{
+	na || antall
+}
+ ```
+
+* antall ord i faktaboks(er)
+
+
+* Byline
+OBS: En tekst kan ha flere forfattere
+  - Navn
+  - tittel
+  - epost
+
+
+* Bilder (antall)
 
 * Kommentarfelt
  ```python
@@ -109,10 +127,7 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 * Bildekarusell
  ```python
 {
-	0.	NA
-	1.	Bildekarusell
-	2.	Ikke bildekarusell
-	3.	Flere bildekaruseller
+	na || antall
 }
  ```
 
@@ -120,50 +135,85 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 *	Galleriboks aka. Relaterte saker
  ```python
 {
-	0.	NA
-	1.	Galleriboks
-	2.	Ikke galleriboks
-	3.	Flere galleribokser
+	na || antall
 }
  ```
 
 *	Flashfil 
  ```python
 {
-	0. 	NA
-	1.	Flashfil
-	2.	Ikke flashfil
-	3.	Flere flashfiler
+	na || antall
 }
  ```
 
 *	Andre interaktive element
  ```python
 {
-	0. 	NA
-	1.	Annet interaktivt element
-	2.	Ikke annet interaktivt element
-	3.	Flere andre interaktive element
+	na || antall
 }
  ```
+
+## Lenker, dette bør struktureres smartere
+
+n2n struktur?
+Både et sett variabler som "oppsummere" for dette dokumentet, og et sette med variabler som gjelder selve lenken i en annen tabell, kanskje?
 
 
 *	Lenkepraksis
  ```python
 {
 	0.	NA
-	1.	Interne lenker
-	2.	Eksterne lenker
-	3.	Både interne og eksterne lenker
+	1.	antall interne lenker
+	2.	antall eksterne lenker
+	3.	totalt antall lenker
 }
  ```
 
-* interne lenker (antall)
 
-* eksterne lenker (antall)
+* lenke dokumenttyper (html, doc, pdf, etc)
+* lenke subdomene (tldextract subdomain)
+* lenke root-domene (bruk f.eks. tldextract domain) 
+* lenke tdl (slik at vi får landene, tldextract tld)
+
+
+
 
 Skulle vi også ha lagret nettverket av hvem som lenker hvem?
 Eller lagre root domenene som lenkes? Eller lenkens geografiske tilhørighet? 
+
+
+
+* Les/Les også
+Dette er en kontekstboks i den gamle designmalen (finnes dette i den nye?)
+ ```python
+{
+	0.	NA
+	1.	Les/Les også
+	2.	Ikke Les/Les også
+}
+ ```
+
+
+
+
+* Deling facebook "like" (ja/nei)
+
+* Deling facebook "share" (ja/nei)
+
+* Deling twitter (ja/nei)
+
+* Deling g+ (ja/nei)
+
+* Deling annet (hvordan skal dette operasjonalliseres)
+
+
+* Kart (antall)
+  - antall
+  - lat/long
+
+
+
+## Ting som hentes ut i fra URL (aka eksperimentelle variabler)
 
 
 * Publiseringssted (disse henter vi ut i fra URL'n)
@@ -211,6 +261,22 @@ Dette henter vi ut i fra URL'n. Er det flere vi burde se etter?
 	17.	 Lydverket
 	18. Valg
 	19. BarneTV aka nrksuper
+	Valg13
+	Viten og teknologi (ev. vitenskap og teknologi)
+	Fordypning
+	Fotball
+	Melodi Grand Prix
+	Sapmi
+	Ytring
+	Yr.no
+	Ut.no
+	Dit.no (?)
+	Nyheter Beta
+	nrksuper.no
+	nrk.no/nyheter/klima
+	nrk.no/kultur
+	nrk.no/livsstil
+	nrk.no/migrapolis
 }
  ```
 
@@ -228,7 +294,6 @@ Hentes ut i fra URL
 	7.	Helse og livsstil (puls)
 	8.	Teknologi og vitenskap (katta)
 	9.	Vær (yr.no)
-	10. ut.no
 }
  ```
 
@@ -251,53 +316,6 @@ Hentes fra URL
  ```
 
 
-* Les/Les også
-Dette er en kontekstboks i den gamle designmalen (finnes dette i den nye?)
- ```python
-{
-	0.	NA
-	1.	Les/Les også
-	2.	Ikke Les/Les også
-}
- ```
-
-* Faktaboks
- ```python
-{
-	0.	NA
-	1.	Ja
-	2.	Nei
-}
- ```
-
-* antall faktabokser (finnes det eksempler der det er flere?)
-
-* antall ord i faktaboks(er)
-
-* Byline
-OBS: En tekst kan ha flere forfattere
-  - Navn
-  - tittel
-  - epost
-
-
-* Bilder (antall)
-
-
-* Deling facebook "like" (ja/nei)
-
-* Deling facebook "share" (ja/nei)
-
-* Deling twitter (ja/nei)
-
-* Deling g+ (ja/nei)
-
-* Deling annet (hvordan skal dette operasjonalliseres)
-
-
-* Kart (antall)
-  - antall
-  - lat/long
 
 ### Skal vi lagre all html noe sted, slik at vi ikke trenger å pinge nrk enda en gang hvis vi finner ut at vi vill hente ut flere eller andre ting, eller hente ut på andre måter?
 
@@ -325,3 +343,18 @@ dette var den konstruerte to-ukersperioden
 11.	Fredag 13 november
 12.	Lørdag 5 desember
 13.	Søndag 20 desember
+
+### Datoer for 2013
+* Mandag 14 januar            
+* Tirsdag 12 februar
+* Onsdag 20 mars
+* Torsdag 18 april
+* Fredag 24 mai
+* Lørdag 15 juni
+* Søndag 14 juli
+* Mandag 5 august
+* Tirsdag 17 september
+* Onsdag 16 oktober
+* Torsdag 14 november
+* Fredag 6 desember
+
