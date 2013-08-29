@@ -316,9 +316,9 @@ Hentes fra URL
 	8.	Valg 09 / Valg2012?
 	9.	Kultur
 	10.	Sport
-} -->
+} 
  ```
-
+-->
 
 
 ### Skal vi lagre all html noe sted, slik at vi ikke trenger å pinge nrk enda en gang hvis vi finner ut at vi vill hente ut flere eller andre ting, eller hente ut på andre måter?
