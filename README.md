@@ -59,7 +59,7 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 
 
-* bildetekst (konkatinert ved flere bilder, formodentlig)
+
 
 * Faktaboks
  ```python
@@ -78,7 +78,7 @@ OBS: En tekst kan ha flere forfattere
   - epost
 
 
-* Bilder (antall)
+
 
 * Kommentarfelt
  ```python
@@ -131,6 +131,10 @@ OBS: En tekst kan ha flere forfattere
 }
  ```
 
+* Bilder (antall)
+
+* bildetekst (konkatinert ved flere bilder, formodentlig)
+
 
 *	Galleriboks aka. Relaterte saker
  ```python
@@ -171,7 +175,7 @@ Både et sett variabler som "oppsummere" for dette dokumentet, og et sette med v
 
 
 * lenke dokumenttyper (html, doc, pdf, etc)
-* lenke subdomene (tldextract subdomain)
+* lenke subdomene (tldextract subdomain) https://pypi.python.org/pypi/tldextract/0.2
 * lenke root-domene (bruk f.eks. tldextract domain) 
 * lenke tdl (slik at vi får landene, tldextract tld)
 
@@ -280,7 +284,7 @@ Dette henter vi ut i fra URL'n. Er det flere vi burde se etter?
 }
  ```
 
-* NRKs hovedkategorier nyheter
+<!-- * NRKs hovedkategorier nyheter
 Hentes ut i fra URL
  ```python
 {
@@ -312,7 +316,7 @@ Hentes fra URL
 	8.	Valg 09 / Valg2012?
 	9.	Kultur
 	10.	Sport
-}
+} -->
  ```
 
 
