@@ -33,11 +33,26 @@ DATASETT: N=alt
 
 * Oppdateringstidspunkt (datetime)
 
+* Datetime for når vi scrapet documentet (aka date.now())
+
 * Interaktive element (antall, int)
 
-*  tekstlengde: Antall ord (all tekst - overskrift, ingress, bildetekster m.m.)
+* Tekstlengde: Antall ord (all tekst - overskrift, ingress, bildetekster m.m.)
 
-* lix Lesbarhetsindex-tall 
+* Deling facebook "like" (ja/nei)
+
+* Deling facebook "share" (ja/nei)
+
+* Deling twitter (ja/nei)
+
+* Deling g+ (ja/nei)
+
+* Deling annet (hvordan skal dette operasjonalliseres)
+
+* Målform: nn || nb || annen_språkkode? 
+bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
+
+* LIX Lesbarhetsindex-tall 
 Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/commands/compute_lix.py
 
 * Nyhetsbyrå
@@ -55,11 +70,6 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 	8 : Flere byråer	
 }
  ```
-* Målform: nn || nb || annen_språkkode? 
-bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
-
-
-
 
 * Faktaboks
  ```python
@@ -71,13 +81,10 @@ bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 * antall ord i faktaboks(er)
 
 
-* Byline
-OBS: En tekst kan ha flere forfattere
+* Byline (m2n, egen tabell)
   - Navn
   - tittel
-  - epost
-
-
+  - epost (ikke stress med dette hvis js skaper trøbbel)
 
 
 * Kommentarfelt
@@ -86,6 +93,7 @@ OBS: En tekst kan ha flere forfattere
 	na || antall
 }
  ```
+ * antall kommentarer (får vi tak i dette, eller lastes det via js?)
 
 * Spørreundersøkelse
  ```python
@@ -93,7 +101,6 @@ OBS: En tekst kan ha flere forfattere
 	na || antall
 }
  ```
-
 
 * Spillelement
  ```python
@@ -122,7 +129,6 @@ OBS: En tekst kan ha flere forfattere
 * Antall videofiler totalt (inkludere vimeo, youtube, osv)
 
 * Antall videofiler fra NRK (egenproduksjon)
-
 
 * Bildekarusell
  ```python
@@ -157,13 +163,11 @@ OBS: En tekst kan ha flere forfattere
 }
  ```
 
-## Lenker, dette bør struktureres smartere
 
-n2n struktur?
-Både et sett variabler som "oppsummere" for dette dokumentet, og et sette med variabler som gjelder selve lenken i en annen tabell, kanskje?
+#### Lenker
 
 
-*	Lenkepraksis
+*	Lenkepraksis (oppsummert data i hovedtabbel)
  ```python
 {
 	0.	NA
@@ -173,18 +177,12 @@ Både et sett variabler som "oppsummere" for dette dokumentet, og et sette med v
 }
  ```
 
-
-* lenke dokumenttyper (html, doc, pdf, etc)
-* lenke subdomene (tldextract subdomain) https://pypi.python.org/pypi/tldextract/0.2
-* lenke root-domene (bruk f.eks. tldextract domain) 
-* lenke tdl (slik at vi får landene, tldextract tld)
-
-
-
-
-Skulle vi også ha lagret nettverket av hvem som lenker hvem?
-Eller lagre root domenene som lenkes? Eller lenkens geografiske tilhørighet? 
-
+* m2n lenketabell
+	* url
+	* lenke dokumenttyper (html, doc, pdf, etc)
+	* lenke subdomene (tldextract subdomain) https://pypi.python.org/pypi/tldextract/0.2
+	* lenke root-domene (bruk f.eks. tldextract domain) 
+	* lenke tdl (slik at vi får landene, tldextract tld)
 
 
 * Les/Les også
@@ -200,15 +198,7 @@ Dette er en kontekstboks i den gamle designmalen (finnes dette i den nye?)
 
 
 
-* Deling facebook "like" (ja/nei)
 
-* Deling facebook "share" (ja/nei)
-
-* Deling twitter (ja/nei)
-
-* Deling g+ (ja/nei)
-
-* Deling annet (hvordan skal dette operasjonalliseres)
 
 
 * Kart (antall)
@@ -284,7 +274,7 @@ Dette henter vi ut i fra URL'n. Er det flere vi burde se etter?
 }
  ```
 
-<!-- * NRKs hovedkategorier nyheter
+* NRKs hovedkategorier nyheter
 Hentes ut i fra URL
  ```python
 {
@@ -318,7 +308,6 @@ Hentes fra URL
 	10.	Sport
 } 
  ```
--->
 
 
 ### Skal vi lagre all html noe sted, slik at vi ikke trenger å pinge nrk enda en gang hvis vi finner ut at vi vill hente ut flere eller andre ting, eller hente ut på andre måter?
