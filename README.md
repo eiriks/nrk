@@ -25,7 +25,7 @@ AUTOMATISERT INNHOLDSANALYSE
 DATASETT: N=alt
 
 
-* fulltekst (hele saken, med unntak av helementer (tittel, forfatter, etc) som lagres i andre felt.)
+* fulltekst (hele saken, med unntak av delelemener (tittel, forfatter, etc) som lagres i andre felt.)
 
 * Publiseringsdato (date)
 
@@ -59,46 +59,35 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 bruk kode her: https://github.com/saffsd/langid.py funker overraskende bra.
 
 
+* bildetekst (konkatinert ved flere bilder, formodentlig)
+
 
 * Kommentarfelt
  ```python
 {
-	0.	NA
-	1.	Kommentarfelt
-	2.	Ikke kommentarfelt
+	na || antall
 }
  ```
 
 * Spørreundersøkelse
  ```python
 {
-	0.	NA
-	1.	Spørreundersøkelse
-	2.	Ikke spørreundersøkelse
-	3.	Flere spørreundersøkelser
+	na || antall
 }
  ```
-* antall spørreundersøkelser (er dette nødvendig?)
+
 
 * Spillelement
  ```python
 {
-	0.	NA
-	1.	Spillelement
-	2.	Ikke spillelement
-	3.	Flere spillelement
+	na || antall
 }
  ```
-
-* antall spillelement (er dette nødvendig?)
 
 * Egentesting (poll)
  ```python
 {
-	0.	NA
-	1.	Egentest
-	2.	Ikke egentest
-	3.	Flere egentester
+	na || antall
 }
  ```
 
