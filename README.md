@@ -100,7 +100,7 @@ Se https://github.com/eiriks/samstemmer/blob/master/fylkesperspektiv/management/
 	na || antall
 }
  ```
- * antall kommentarer (får vi tak i dette, eller lastes det via js?)
+* antall kommentarer (får vi tak i dette, eller lastes det via js?)
 
 * Spørreundersøkelse
  ```python
