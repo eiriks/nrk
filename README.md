@@ -281,8 +281,10 @@ Dette henter vi ut i fra URL'n. Er det flere vi burde se etter?
 }
  ```
 
-* NRKs hovedkategorier nyheter
+* NRKs hovedkategorier/nyhetskategorier nyheter
 Hentes ut i fra URL
+
+
  ```python
 {
 	0.	NA
@@ -295,13 +297,6 @@ Hentes ut i fra URL
 	7.	Helse og livsstil (puls)
 	8.	Teknologi og vitenskap (katta)
 	9.	Vær (yr.no)
-}
- ```
-
-* NRKs nyhetskategorier
-Hentes fra URL
- ```python
-{
 	0.	NA
 	1.	Siste nytt
 	2.	Norge
