@@ -10,9 +10,6 @@ def nrk_2013_template(soup, dictionary):
 
     # Finn forfatter(e)
     # Finn dato
-
-    # TODO: FIKS ↓
-    # En massiv kludge ↓, som ikke skal sees av noen med sarte sjeler. Bytter ut NRKs representasjoner av sommer og vintertid med Pythons.
     published = strptime(soup.time['datetime'][0:19], "%Y-%m-%dT%H:%M:%S")
     print published
     # timestamp = nrk_ny_dato_til_timestamp(published)

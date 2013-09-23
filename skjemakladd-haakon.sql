@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS page;
 */
 
 CREATE TABLE IF NOT EXISTS author (
-       author_id INTEGER PRIMARY KEY ASC,
+       author_id INTEGER PRIMARY KEY ASC, /* TODO: Hvordan sette inn i denne? */
        name TEXT NOT NULL,
        email TEXT UNIQUE,
        role TEXT
@@ -20,21 +20,21 @@ CREATE TABLE IF NOT EXISTS author (
 CREATE TABLE IF NOT EXISTS page (
 --       page_id INTEGER PRIMARY KEY ASC, -- Mente å huske
 -- 	 DATETIME er dato + tidspunkt
-       url TEXT UNIQUE,	 
+       url TEXT PRIMARY KEY,	 
        title TEXT NOT NULL,
        fulltext LONGTEXT NOT NULL,
        /* 
        	For å gjøre det lettere å søke gjennom databasen er dette gjort slik akkurat nå.
         Det burde gjøres bedre, og så kunne vi heller lagt ved eksempelspørringer, men akkurat nå er det en slik en.
        */
-	Akkurat nå er ting bare lagt ut slik 
+       -- Akkurat nå er ting bare lagt ut slik 
        -- <todo class="absolutely_disgusting" >
        publication_date date NOT NULL,
        publication_time time NOT NULL,
        update_date date NOT NULL,
        update_time time NOT NULL,
        scrape_date date NOT NULL,
-       scrape_date time NOT NULL,
+       scrape_time time NOT NULL,
        -- </todo>
        share_fb_like INTEGER NOT NULL,
        share_fb_share INTEGER NOT NULL,
@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS page (
        news_bureau INTEGER NOT NULL -- Jeg antar at vi skal gjøre oppslag her?
 );
 
+-- Selvsagt en tilsvarende for kommentarer.
 CREATE TABLE IF NOT EXISTS factbox (
        parent_article_url,
        num_links INTEGER,
