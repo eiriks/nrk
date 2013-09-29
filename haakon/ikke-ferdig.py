@@ -29,7 +29,7 @@ def dispatch_on_template(soup, dictionary):
 
 ## Entry points
 def analyze_url(url):
-    dictionary = {"url":url, "text":"TEKST VILLE EKSISTERT HER", "timestamp":9001}
+    dictionary = {"url":url, "timestamp":9001}
     dictionary = dispatch_on_template(soup_from_url(url), dictionary)
     # add url to dictionary
 #    add_to_db(dictionary)
