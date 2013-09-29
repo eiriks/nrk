@@ -13,8 +13,12 @@ from rdbms_insertion import add_to_db
 
 ### Hjelpefunksjoner
 def soup_from_url(url):
-    "Tar en URL og returnerer et BeautifulSoup objekt"
-    return BeautifulSoup(requests.get(url).text)
+    """Tar en URL og returnerer et BeautifulSoup objekt
+       Nå som vi er under utvikling returnerer vi en suppe basert på en html-fil vi allerede har lagret."""
+    #bs = BeautifulSoup(requests.get(url).text) # Dette er det vi egentlig skal gjøre.
+    data = open("testhtml/ny.template.html", "r").read()
+    bs = BeautifulSoup(data)
+    return bs
 
 def dispatch_on_template(soup, dictionary):
     print "WARNING: Unimplemented method."
@@ -38,6 +42,5 @@ def analyze_urls(url_collection):
 
 ## Running the code
 url = "http://www.nrk.no/valg2013/1.11193015"
-
-#analyze_url(url)
+analyze_url(url)
 
