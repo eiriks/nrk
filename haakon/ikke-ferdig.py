@@ -29,10 +29,10 @@ def dispatch_on_template(soup, dictionary):
 
 ## Entry points
 def analyze_url(url):
-    dictionary = {"url":url, "timestamp":9001}
+    dictionary = {"url":url, "timestamp":datetime.datetime.now()}
     dictionary = dispatch_on_template(soup_from_url(url), dictionary)
     # add url to dictionary
-#    add_to_db(dictionary)
+    add_to_db(dictionary)
     return dictionary
 
 def analyze_urls(url_collection):
