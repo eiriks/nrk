@@ -16,24 +16,30 @@ def nrk_2013_template(soup, dictionary):
     # Finn forfatter(e)
     byline = soup.find('div', 'byline')
     authors = []
-    for address, li in izip(byline.find_all('address'),
-                            byline.find_all('li', 'icon-email')):
-        authorName = address.find(class_='fn').string
-        # NRK is still trying to hide the email address
-        # from spammers.
-        href = li.a['href']
-        authorMail = unquote(href[21:-1])[7:]
-        authorRole = address.find(class_='role').string.strip()
-        author = [authorName, authorMail, authorRole]
-        authors.append(author)
+    
+    # wrapper denne i en try/except midlertidig for å komme fram til tekst jeg kan kjøre LIX på. (Eirik)
+    try:
+        for address, li in izip(byline.find_all('address'), byline.find_all('li', 'icon-email')):
+            authorName = address.find(class_='fn').string
+            # NRK is still trying to hide the email address
+            # from spammers.
+            href = li.a['href']
+            authorMail = unquote(href[21:-1])[7:]
+            authorRole = address.find(class_='role').string.strip()
+            author = [authorName, authorMail, authorRole]
+            authors.append(author)
+    except AttributeError:
+        # og adder denne som en påminndelse om at vi må skrive dette noe mer robust for variasjoner (Eirik)
+        print "unntakshåndtering må på plass"
 
     dictionary['authors'] = authors
     # Finn publiseringsdato
     dictionary['published'] = strptime(soup.time['datetime'][0:19], "%Y-%m-%dT%H:%M:%S")
 
     # Finn overskrift
-    dictionary['headline'] = soup.header.find('div', 'articletitle').h1.string
-    
+    dictionary['headline'] = soup.header.find('div', 'articletitle').h1.text # .text gived unicode, .string gives 'bs4.element.NavigableString'
+
+
     updateString = "NO UPDATES"
     updated = soup.find('div', 'published').find('span', 'update-date')
     if updated:

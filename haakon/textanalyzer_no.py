@@ -8,7 +8,7 @@ import syllables_no
 
 
 class Textanalyzer(object):
-    """Except a -> unicode <- string of text
+    """Expects a -> unicode <- string of text
     based on: https://github.com/nltk/nltk_contrib/tree/master/nltk_contrib/readability
     rewritten to work with unicode text 
     """

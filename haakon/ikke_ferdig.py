@@ -3,10 +3,11 @@
 
 ## Imports from other files (and libraries). This keeps the scriptfile lean, mean, and clean.
 ## It also lets me write tests embellishments, helper functions and more and stuff it there.
- 
+
+import urllib2
 from bs4 import BeautifulSoup
 import datetime 
-import requests
+#import requests    # brukes ikke til noe?
 from nrk_new_template import nrk_2013_template
 from rdbms_insertion import add_to_db
 
@@ -19,6 +20,10 @@ def soup_from_url(url):
     data = open("testhtml/ny.template.html", "r").read()
     bs = BeautifulSoup(data)
     return bs
+
+def soup_from_live_url(url):
+    soup = BeautifulSoup(urllib2.urlopen(url).read())
+    return soup
 
 def dispatch_on_template(soup, dictionary):
     print "WARNING: Unimplemented method."

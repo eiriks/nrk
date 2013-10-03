@@ -9,18 +9,21 @@ def add_to_db(dict):
     print "This action will merely print the statement that it WOULD have executed, if it had done so."
     print "It can't and it won't. (Later though, it will be able to, and will do so.)"
 
+    # could it be that .decode('unicode-escape') should be .encode?
+    # we do expect all text to be unicode, so there should be no need..
+
     print insertion.format(url_self_link="url_self_link IS NOT DONE",
-                           title=dict['headline'].decode('unicode-escape'),
-                           fulltext=dict['body'].decode('unicode-escape'),
-                           publication_date=dict['published'].decode('unicode-escape'),
-                           update_date=dict['updated'].decode('unicode-escape'),
+                           title=dict['headline'].encode('unicode-escape'),
+                           fulltext=dict['body'].encode('unicode-escape'),
+                           publication_date=dict['published'], # datetime has no need for this?  .encode('unicode-escape'),
+                           update_date=dict['updated'], # datetime has no need for this? (.encode('unicode-escape'),)
                            scrape_date="scrape_date IS NOT DONE",
                            share_fb_like="share_fb_like IS NOT DONE",
                            share_fb_share="share_fb_share IS NOT DONE",
                            share_googleplus="share_googleplus IS NOT DONE",
                            share_twitter="share_twitter IS NOT DONE",
                            share_others="share_others IS NOT DONE",
-                           article_language=dict['language'].decode('unicode-escape'),
+                           article_language=dict['language'].encode('unicode-escape'),
                            lesbahet="lesbahet IS NOT DONE",
                            external_links="external_links IS NOT DONE",
                            internal_links="internal_links IS NOT DONE",
