@@ -64,3 +64,36 @@ print lix.get_lix_score()		# printer LIX score
 import pprint
 pp = pprint.PrettyPrinter()
 pp.pprint(lix.analyzeText(test_text)) # det er kanskje unødvendig at denne funksjonen også ta råteksten som input, men putt pytt
+
+
+
+
+# målform kan jo også testes på denne dataen..
+print "*"*50
+import langid
+print "denne teksten har språk (burde være norsk bokmål):"
+print langid.classify(test_text)
+
+# hva med en nynorsk tekst?
+
+test_text2 = u"""Eit steg med den eine foten like utfor stien, og brått begynte Dagny å søkke ned i gjørma. – Jo meir ho kjempa, jo raskare sank ho ned, fortel mora.
+ELI FOSSDAL VAAGE
+eli.fossdal.vaage@nrk.no
+Publisert 02.10.2013 17:41.
+Lagre i mine favoritter
+– Eg hadde akkurat komme av eit fly på Gardermoen, då eg fekk ein telefon frå mannen min, fortel Inger Roll-Matthiesen, mor til den uheldige elleveåringen.
+– Han sa: Berre så du veit det, så står Dagny fast i ei myr på Hardangervidda og ventar på å bli redda! 
+Då mora fekk beskjeden, var fleire redningshelikopter alt på veg, og elleveåringen sjølv hadde fortalt til faren at ho ikkje lenger sank lenger ned.
+– Så no er det jo nestein ein solskinshistorie, smiler Roll-Matthiesen, som er imponert over kor fort hjelpa kom på plass.
+Sank berre lenger ned
+Ifølgje Roll-Matthiesen gjekk dottera berre bortover stien og prata, då ho trådde utfor med den eine foten. Der sette beinet seg fast i eit hol. Men då jenta skulle dra foten til seg, gjekk det ikkje.
+– Ho sat bom fast. Og jo meir ho kjempa i mot, jo lenger ned sank ho.
+Politiet opplyser til NRK.no at dei fekk beskjed om den noko uvanlege hendinga klokka 15. Berre ein time seinare hadde mannskap frå det eine redningshelikopteret lukkast med å grave Dagny laus.
+Var ikkje redd
+To helikopter, eit frå Bergen og eit frå Ål, var alt på veg til Dagny og turfølgjet då mor Inger fekk vite om kva som stod på. Ho fortel at dottera tok det heile nokså roleg.
+– Ho sa til meg like etter at ho kom laus: Eg var ikkje redd, mamma! Og eg græt ikkje.
+– Ho sa at dei hadde nok av klede, og selskap var der jo, så alt i alt var dei rolege og berre glade for at hjelpa var så raskt ute, avsluttar Roll-Matthiesen."""
+
+print "og en tekst vi vet er nynorsk:"
+print langid.classify(test_text2)
+
