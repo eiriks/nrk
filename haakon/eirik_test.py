@@ -97,3 +97,13 @@ To helikopter, eit frå Bergen og eit frå Ål, var alt på veg til Dagny og tur
 print "og en tekst vi vet er nynorsk:"
 print langid.classify(test_text2)
 
+
+
+# så var det de urlene da.
+# her burde vi kunne kjøre gjennom url for url
+with open('test_urls.txt') as f:
+    content = f.readlines()
+    for url in content[0:5]: # kun de fem første for nå...
+        print url,
+        #print soup_from_live_url(url)
+
