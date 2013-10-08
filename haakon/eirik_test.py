@@ -98,7 +98,6 @@ print "og en tekst vi vet er nynorsk:"
 print langid.classify(test_text2)
 
 
-
 # så var det de urlene da.
 # her burde vi kunne kjøre gjennom url for url
 with open('test_urls.txt') as f:
