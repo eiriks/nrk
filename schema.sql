@@ -8,10 +8,13 @@
 
 */
 
+USE nrk; /* hos meg heter dataabsen jeg bruker nrk -Haakon */
+
 DROP TABLE IF EXISTS author_page;
 DROP TABLE IF EXISTS author;
 DROP TABLE IF EXISTS page;
-
+DROP TABLE IF EXISTS links;
+DROP TABLE IF EXISTS factbox;
 
 CREATE TABLE IF NOT EXISTS `author` (
   `autor_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -27,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `page` (
   `url` varchar(256) NOT NULL DEFAULT '' COMMENT 'inputt url',
   `url_self_link` varchar(256) DEFAULT NULL COMMENT 'ta med "kopier lenkeadresse"',
   `title` varchar(256) NOT NULL DEFAULT '',
-  `fulltext` text NOT NULL,
+  `full_text` text NOT NULL,
   `publication_date` datetime DEFAULT NULL COMMENT 'both date and time',
   `update_date` datetime DEFAULT NULL COMMENT 'both date and time',
   `scrape_date` datetime NOT NULL,
@@ -55,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `page` (
   `flash_file` int(11) DEFAULT NULL COMMENT 'antall',
   `image_collection` int(11) DEFAULT NULL COMMENT 'antall karuseller',
   `images` int(11) DEFAULT NULL COMMENT 'antall bilder',
-  `image_captions` varchar(256) DEFAULT NULL COMMENT 'konkatinert ved flere bilder',
+  `image_captions` varchar(1024) DEFAULT NULL COMMENT 'konkatinert ved flere bilder',
   `related_stories` int(11) DEFAULT NULL COMMENT 'antall',
   `related_stories_box_thematic` int(11) DEFAULT NULL COMMENT 'antall stories',
   `related_stories_box_les` int(11) DEFAULT NULL COMMENT 'abtall stories',
@@ -83,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `links` (
   `doc_type` varchar(256) DEFAULT NULL COMMENT 'doc, pdf, html, etx',
   `link_subdomain` varchar(256) DEFAULT NULL,
   `link_root_domain` varchar(256) DEFAULT NULL,
-  `link_ tld` varchar(50) DEFAULT '' COMMENT 'to get countries se, dk, ..',
+  `link_tld` varchar(50) DEFAULT '' COMMENT 'to get countries se, dk, ..',
   `internal` int(1) DEFAULT NULL COMMENT 'nrk.no, yr.no, nrkabeta.no, p3.no, ...',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

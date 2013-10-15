@@ -12,13 +12,20 @@ from nrk_new_template import nrk_2013_template
 from rdbms_insertion import add_to_db
 from analyze_url import analyze_url
 import re
+
+# Dette skulle hjelpe?
+# En ekte glob!
+request = False
+
 ### Hjelpefunksjoner
 def soup_from_url(url):
     """Tar en URL og returnerer et BeautifulSoup objekt
        Nå som vi er under utvikling returnerer vi en suppe basert på en html-fil vi allerede har lagret."""
     try:
-        data = requests.get(url).text # Dette er det vi egentlig skal gjøre
-    except requests.exceptions.TooManyRedirects:
+        request  = requests.get(url)
+        data = request.text # Dette er det vi egentlig skal gjøre
+        request.close() # Forhåpentligvis fikser dette problemet med at vi har for mange filer oppe
+    except requests.exceptions.TooManyRedirects: # Dette skjedde på noen radiokanaler eller noe.
         print "{} has does not evaluate properly, and we will infinitely redirect".format(url)
         return False
     #data = open("testhtml/ny.template.html", "r").read() # Dette er bare nå som vi tester for NRK ny.

@@ -51,19 +51,19 @@ def add_to_db(dict):
         for author in dict['authors']:
             authorName = author[0]
             if(authorName):
-                authorName = authorName.encode('utf-8')
+                authorName = authorName
             else:
                 authorName = u"Ukjent"
                 
             authorMail = author[1]
             if(authorMail):
-                authorMail = authorMail.encode('utf-8')
+                authorMail = authorMail
             else:
                 authorMail = u"Ukjent"
                 
             authorRole = author[2]
             if(authorRole):
-                authorRole = authorRole.encode('utf-8')
+                authorRole = authorRole
             else:
                 authorRole = u"Ukjent" 
                 
