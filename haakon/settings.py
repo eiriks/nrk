@@ -24,4 +24,12 @@ rdbms_hostname = "localhost"
 rdbms_username = "scraper"
 rdbms_password = "reparcs"
 
+# local
+rdbms_hostname = "localhost"
+rdbms_username = "root"
+rdbms_password = "root"
+
+
+
 # Planen er å legge ut SQL-kommandoene i seperate filer vi kan deretter lese fra og redigere uten å måtte tenke på Python
+
