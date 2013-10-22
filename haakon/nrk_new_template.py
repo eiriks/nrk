@@ -30,14 +30,17 @@ def nrk_2013_template(soup, data, dictionary):
     authors = []
     
     # wrapper denne i en try/except midlertidig for å komme fram til tekst jeg kan kjøre LIX på. (Eirik)
+
+
+
     try:
         for address, li in izip(byline.find_all('address'), byline.find_all('li', 'icon-email')):
-            authorName = address.find(class_='fn').string.encode('utf-8')
+            authorName = address.strong.text #address.find(class_='fn').string.encode('utf-8')
             # NRK is still trying to hide the email address
             # from spammers.
-            href = li.a['href']
-            authorMail = unquote(href[21:-1])[7:] # Antakelsen er at epost vil holde seg til ASCII. 
-            authorRole = address.find(class_='role').string.strip().encode('utf-8')
+            #href = li.a['href']
+            authorMail = 'abandon this? too hard?'#unquote(href[21:-1])[7:] # Antakelsen er at epost vil holde seg til ASCII. 
+            authorRole = address.span.text #address.find(class_='role').string.strip().encode('utf-8')
             author = [authorName, authorMail, authorRole]
             authors.append(author)
     except AttributeError:
@@ -83,12 +86,12 @@ def nrk_2013_template(soup, data, dictionary):
     dictionary['body'] = body
 
     # Finn ut av antall tegn, linjer og ord, og kjør lesbarhetsindekstesten.
-    lix = Lix(body.encode('utf-8'))
+    lix = Lix(body) # .encode('utf-8')
     analyse = lix.analyzeText(body)
     try:
         dictionary['char_count'] = len(body)
-        dictionary['line_count'] = analyse['wordCount']
-        dictionary['word_count'] = analyse['sentenceCount']
+        dictionary['word_count'] = analyse['wordCount']
+        dictionary['line_count'] = analyse['sentenceCount']
         dictionary['lesbahet'] = lix.get_lix_score()
     except TypeError:
         print "[ERROR] Kunne ikke opprette analyse."

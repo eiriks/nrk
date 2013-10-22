@@ -22,13 +22,30 @@ def tell(soup, data, dictionary):
     logger.addHandler(fh)
     logger.addHandler(ch)
 
-    a = soup.find_all("a")
+
+    # only a's inside the article tag (not the menus and stuff)
+    a = soup.article.find_all("a")
+
     lenker = []
+
+    # these links we do not want to include..
+    not_published_links = soup.select(".published a")
+    not_sharing_links = soup.select(".sharing a")
+    not_byline_links = soup.select(".byline a")
+    # should we remove the whole aside-element? (I want to include the fack-box, but not "related stories")
+    # we should remove all links that have a[href] javascript:location....
+    # remove those..
+    a = set(a) - set(not_published_links + not_sharing_links + not_byline_links)
+
     for lenke in a:
         href = lenke.get('href')
+        print href
         if href != None:
             lenker.append(href)
-    domain = (tldextract.extract(dictionary['url']))[1]
+
+    # wish is was this simple.. but p3.no, nrkbeta.no, radio.nrk.no, etc. are also internal links (internal to the NRK)
+
+    domain = (tldextract.extract(dictionary['url']))[1] # basically just 'nrk'
     
     interne_lenker = []
     eksterne_lenker = []

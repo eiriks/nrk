@@ -41,6 +41,7 @@ class  Lix():
             words = self.getWords(self.text)
             wordCount = len(words)
             sentenceCount = len(self.getSentences(self.text))
+            
             #print "%s setninger" % sentenceCount
             analyzedVars = {}
             analyzedVars['words'] = words
@@ -51,6 +52,7 @@ class  Lix():
     def getWords(self, text=''):
         words = []                  #print type(text)    # should be unicode 
         words = self.tokenizer.tokenize(text)
+        #print len(words)
         filtered_words = []
         for word in words:
             if word in self.special_chars or word == " ":
@@ -59,6 +61,7 @@ class  Lix():
                 new_word = word.replace(",","").replace(".","")
                 new_word = new_word.replace("!","").replace("?","")
                 filtered_words.append(new_word)
+        #print len(filtered_words)
         return filtered_words
 
     def getSentences(self, text=''):

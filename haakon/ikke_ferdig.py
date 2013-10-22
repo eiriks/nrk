@@ -24,7 +24,7 @@ def soup_from_url(url):
     try:
         request  = requests.get(url)
         data = request.text # Dette er det vi egentlig skal gjøre
-        request.close() # Forhåpentligvis fikser dette problemet med at vi har for mange filer oppe
+        #request.close() # Forhåpentligvis fikser dette problemet med at vi har for mange filer oppe
     except requests.exceptions.TooManyRedirects: # Dette skjedde på noen radiokanaler eller noe.
         print "{} has does not evaluate properly, and we will infinitely redirect".format(url)
         return False
@@ -73,6 +73,7 @@ def mains(url_collection):
 
 ## Running the code (Alt her er bare testing og ting.)
 url = "http://www.nrk.no/livsstil/hvordan-bli-den-ultimate-jegeren-1.11286386" # Dette er ren juks, bare så det er sagt. Denne strengen er bare her for testingens skyld.
+#url = "http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493"
 main(url)
 
 #print requests.get("http://www.nrk.no/valg2013/1.11290083").url

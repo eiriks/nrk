@@ -36,16 +36,21 @@ def add_to_db(dict):
     with open('insertion_factbox.sql', 'r') as f:
         insertion_factbox = f.read()
 
-        
-    # could it be that .decode('unicode-escape') should be .encode?
-    # we do expect all text to be unicode, so there should be no need..
-
+    # connect    
     try:
         # Set up a database cursor:
-        connection = mdb.connect('localhost', 'scraper', 'reparcs', 'nrk')
+        # Added charset='utf8' to default to utf8 for text to/from db
+        connection = mdb.connect(host=rdbms_hostname, user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
+        #connection = mdb.connect(unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock", user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
         cur = connection.cursor()
         cur.execute("USE nrk;")
- 
+        logger.info("koblet til databasen")
+    except:
+        logger.error("kunne ikke logge på databasen")
+
+
+
+    try:
         # Vi må være forsiktige med forfattere, siden ikke NRK alltid klarer å huske på dem.
         # Se td. http://www.nrk.no/livsstil/test-av-norges-mest-solgte-brod-1.8352163, med tre forfattere.
         for author in dict['authors']:
@@ -113,11 +118,16 @@ def add_to_db(dict):
         else:
             updated = published
 
+
+        # print "*"*50
+        # print type(dict['body']), dict['body']
+        # print "*"*50
+
         cur.execute(insertion,
                     (dict['url'],
                      dict['url_self_link'],
-                     dict['headline'].encode('utf-8'),
-                     dict['body'].encode('utf-8'),
+                     dict['headline'], #.encode('utf-8'),
+                     dict['body'], #.encode('utf-8'),
                      published,
                      updated,
                      timestamp,
@@ -126,7 +136,7 @@ def add_to_db(dict):
                      dict['googleplus_share'],
                      dict['twitter_share'],
                      dict['others_share'],
-                     dict['language'].encode('utf-8'),
+                     dict['language'], #.encode('utf-8'),
                      dict['lesbahet'],
                      "NA", # Får ikke fatt på nyhetsbyrå enda.
                      len(dict['external_links']),
@@ -145,7 +155,7 @@ def add_to_db(dict):
                      dict['flash_file'],
                      dict['image_collection'],
                      dict['images'],
-                     dict['image_captions'].encode('utf-8'),
+                     dict['image_captions'],# .encode('utf-8'),
                      dict['related_stories'],
                      dict['related_stories_box_thematic'], #"related_stories_box_thematic IS NOT DONE",
                      dict['related_stories_box_les'],           #"related_stories_box_les IS NOT DONE",
@@ -157,11 +167,12 @@ def add_to_db(dict):
 
         connection.commit()
         return
-            
+
     except mdb.Error, e:
         connection.rollback()
         print "Error %d: %s" % (e.args[0],e.args[1])
-        sys.exit(1)
+        sys.exit(1)      
+
         
     finally:
         if connection:

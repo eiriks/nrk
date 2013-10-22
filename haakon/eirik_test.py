@@ -59,6 +59,29 @@ NRK.no oppdaterer saken"""
 lix = Lix(test_text) 			# oppretter instans
 print lix.get_lix_score()		# printer LIX score
 
+
+too_high_lix = """Omtrent 13 000 soldater deltar i øvelsen fra 11.-21. februar med deltakere fra syv land: Thailand, USA, Singapore, Indonesia, Japan Sør-Korea og Malaysia deltar i Cobra Gold 2013, som er en multinasjonal militærøvelse.
+
+Cobra Gold fokuserer på å vedlikeholde og forbedre forhold mellom militæret i nasjoner som har felles mål og forpliktelser når det gjelder sikkerhet i Asia-/Stillehavsregionen.
+
+Multinasjonal øvelse
+Det er en årlig øvelse som foregår rundt om i hele Thailand. Soldatene som deltar får være med på alt fra kamptrening til katastrofehjelp under øvelsen som avsluttes 21. februar.
+
+Vil oppnå fred og stabilitet
+Under åpningsseremonien sa admiral Samuel Locklear, sjef i styret for den amerikanske Stillehavskysten, at den årlige øvelsen viser et engasjement fra de deltakende nasjonene for å oppnå fred og stabilitet i regionen.
+
+Slik som hvert år, omfatter øvelsene i år krigføring i jungelen, sivil evakuering og tiltak mot kjemiske, biologiske og kjernefysiske angrep. Soldatene lærer også hvordan de skal bidra i humanitære og kommunale bistandsprosjekter.
+
+20 nasjoner observerer for første gang
+I år føyer Myanmar seg i rekken av 20 nasjoner som observerer øvelsene for første gang. USA sendte ut invitasjonen til landet som et incentiv for å få president Thein Stein og hans regjering til å fortsette med reformene som allerede pågår.
+
+Cobra Gold startet i 1982 som en tosidig militærøvelse mellom USA og og Thailand. I 2000 ble det imildertid utvidet da Singapore også ble invitert til å delta."""
+
+lix2 = Lix(too_high_lix) 			# oppretter instans
+print "Lix på too_high_lix: %s" % lix2.get_lix_score()
+
+
+
 # NB: her kan du også få ordtellin og setningstelling, hvis ønskelig.
 # se 
 import pprint
