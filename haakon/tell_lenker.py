@@ -39,7 +39,7 @@ def tell(soup, data, dictionary):
 
     for lenke in a:
         href = lenke.get('href')
-        print href
+        #print href
         if href != None:
             lenker.append(href)
 
@@ -50,6 +50,8 @@ def tell(soup, data, dictionary):
     interne_lenker = []
     eksterne_lenker = []
     for lenke in lenker:
+        # her må det en sjekk om url'n finnes i en liste av domener...
+        #print tldextract.extract(lenke), lenke
         if domain in lenke:
             interne_lenker.append(lenke)
         else:

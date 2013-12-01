@@ -72,8 +72,18 @@ def mains(url_collection):
     return "DONE"
 
 ## Running the code (Alt her er bare testing og ting.)
-url = "http://www.nrk.no/livsstil/hvordan-bli-den-ultimate-jegeren-1.11286386" # Dette er ren juks, bare så det er sagt. Denne strengen er bare her for testingens skyld.
+#url = "http://www.nrk.no/livsstil/hvordan-bli-den-ultimate-jegeren-1.11286386" # Dette er ren juks, bare så det er sagt. Denne strengen er bare her for testingens skyld.
 #url = "http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493"
-main(url)
+urler = ['http://www.nrk.no/ytring/boligprisene-faller.-og-hva-sa_-1.11387030','http://www.nrk.no/viten/enno-hap-for-ison-1.11386243','http://www.nrk.no/verden/_-usa-avlyttet-millioner-samtaler-1.11322481','http://www.nrk.no/kultur/pfu-avviser-bokbehandling-1.11388032','http://www.nrk.no/verden/kamper-om-bagdad-1.677611','http://www.nrk.no/sport/anand-snakker-ut-etter-tapet-1.11388050','http://www.nrk.no/livsstil/hvordan-bli-den-ultimate-jegeren-1.11286386','http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493']
+
+
+import webbrowser
+
+for url in urler:
+    print "*"*15
+    print url
+    #webbrowser.open_new_tab(url)
+    main(url)
+
 
 #print requests.get("http://www.nrk.no/valg2013/1.11290083").url

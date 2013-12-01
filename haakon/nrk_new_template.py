@@ -6,6 +6,7 @@ from time import strptime
 from itertools import izip
 from urllib2 import unquote
 from Lix import Lix
+from datetime import datetime
 from fetch_disqus_comments import num_comments
 from settings import language_identification_threshold
 from settings import uncertain_language_string
@@ -25,41 +26,44 @@ def nrk_2013_template(soup, data, dictionary):
     dictionary['email_share']      = 1
     dictionary['related_stories']  = 6
 
-    # Steg 3: Finn forfatter(e)
+    # remove javascript.
+    # if we want to measure amount of js or numbers of .js docs, do it here.
+    [s.decompose() for s in soup.body.article('script')]
+    # I believe this is what creates the somewhat awkward line-breaks in the soup
+
+    # Finn forfatter(e)
     byline = soup.find('div', 'byline')
     authors = []
-    
-    # wrapper denne i en try/except midlertidig for å komme fram til tekst jeg kan kjøre LIX på. (Eirik)
-
-
-
     try:
         for address, li in izip(byline.find_all('address'), byline.find_all('li', 'icon-email')):
             authorName = address.strong.text #address.find(class_='fn').string.encode('utf-8')
-            # NRK is still trying to hide the email address
-            # from spammers.
+            # NRK is still trying to hide the email address from spammers.
             #href = li.a['href']
             authorMail = 'abandon this? too hard?'#unquote(href[21:-1])[7:] # Antakelsen er at epost vil holde seg til ASCII. 
             authorRole = address.span.text #address.find(class_='role').string.strip().encode('utf-8')
             author = [authorName, authorMail, authorRole]
             authors.append(author)
     except AttributeError:
-        # og adder denne som en påminndelse om at vi må skrive dette noe mer robust for variasjoner (Eirik)
-        # Men dette er måten templaten gjør det på. Dersom vi kommer hertil og forfatterene ikke er her, så har vi feilidentifisert templaten.
-        # Hva fornuftig kan en gjøre dersom dokumentet er feilhåndtert, annet enn å krasje høylytt?
-        # Det enkleste akkurat nå er å si eksplisitt i fra om at vi ikke finner noen forfatter, og setter inn en placeholder for nå.
-        # Dersom dette ikke gjelder noen, så er saken grei, dersom det gjelder 10 er det mulig å hente ut informasjonen for hånd,
-        # og dersom det gjelder mange, må noe gjøres om. Men dette er funksjonen fra i fjor, og den ser ut til å fungere fint.
-        # Men gode ideer til å håndtere dette er selvsagt verdsatt. ^_^ (Haakon)
+        # Finner ingen forfatter(e)
         print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
         authors.append(["Ukjent", "Ukjent", "Ukjent"])
 
     dictionary['authors'] = authors
+    
+
     # Finn publiseringsdato
     try:
         dictionary['published'] = strptime(soup.time['datetime'][0:19], "%Y-%m-%dT%H:%M:%S")
     except TypeError:
         dictionary['published'] = "NULL"
+
+    # Finn evnt. oppdateringer
+    try:
+        updated = soup.find('span', 'update-date')
+        dictionary['updated'] = datetime.strptime(updated.time['datetime'][0:19], "%Y-%m-%dT%H:%M:%S")
+    except:
+        dictionary['updated'] = False
+
 
     # Finn overskrift
     try:
@@ -67,44 +71,84 @@ def nrk_2013_template(soup, data, dictionary):
     except AttributeError:
         dictionary['headline'] = soup.title.text
 
-    updateString = "NO UPDATES"
-    updated = soup.find('div', 'published')
-    if updated:
-        updated = updated.find('span', 'update-date')
+    # Find fack-boxes :
+    # disse bør fjernes bra body, men inkluderes i LIX. Rimelig?
+    faktabokser = []
+    #for boks in soup.find_all("section", class_="articlewidget cf facts lp_faktaboks"):
+    for boks in soup.find_all("section", class_="facts"):
+        #print len(boks), boks.text #ok
+        text = boks.text.strip()
+        #print text
+        lix = Lix(text)
+        analysis = lix.analyzeText(text)
+        faktabokser.append({"text":text, "links":boks.find_all("a"), "wordcount":analysis['wordCount']})
+        # and remove from soup
+        boks.decompose()
+        # NB, this also removes pictures if any in the fact-box
+    dictionary['factbox'] = faktabokser
 
-    if updated:
-        updateString = updated['title']
-        updateString = updateString[:10], updateString[16:21].replace('.', ':')
-               
-    dictionary['updated'] = updateString
 
     # Finn brødtekst
-    body = "";
-    for para in soup.find_all('p'):
-        body += (para.text + "\n")
-    body = body
-    dictionary['body'] = body
+    # article MINUS .universes OR is it .lp_related ?
+    # remove the related section
+    try:
+        soup.body.article.find('section', 'lp_related').decompose()
+    except:
+        pass
+    # remove div.published (the top-bar)
+    soup.body.article.find('div', 'published').decompose()
+    # remove div.shareurl (the sharebar)
+    soup.body.article.find('div', 'sharing').decompose()
+    # store body text
+
+    # add some strip functions here?
+    dictionary['body'] = soup.body.article.text.strip()
+
 
     # Finn ut av antall tegn, linjer og ord, og kjør lesbarhetsindekstesten.
-    lix = Lix(body) # .encode('utf-8')
-    analyse = lix.analyzeText(body)
+    lix = Lix(dictionary['body']) 
+    analyse = lix.analyzeText(dictionary['body'])
     try:
-        dictionary['char_count'] = len(body)
+        dictionary['char_count'] = len(dictionary['body'])
         dictionary['word_count'] = analyse['wordCount']
         dictionary['line_count'] = analyse['sentenceCount']
         dictionary['lesbahet'] = lix.get_lix_score()
     except TypeError:
         print "[ERROR] Kunne ikke opprette analyse."
         print "[DEBUG] Body:"
-        print body.encode('utf-8')
+        print dictionary['body']
         print "[DEBUG] /Body"
         dictionary['line_count'] = -1
         dictionary['word_count'] = -1 
         dictionary['char_count'] = -1
         dictionary['lesbahet'] = -1.0
 
+    # eksempler fra nrk.no: (NTB), (©NTB), (NRK/Reuters), (NTB/Reuters), (AFP), (NRK/Reuters/AFP/AP), (NTB-AFP), '(Kilde: BBC, The Guardian, NTB)'
+    syndicators = ['NTB', '©NTB', 'NRK/Reuters', '©NRK','AFP', 'NRK/Reuters/AFP/AP', 'NTB-AFP','NRK-NTB-AFP-Reuters']
+    # andre kjente:   # flere her: http://en.wikipedia.org/wiki/News_agency
+    syndicators.extend(['ANSA','APA', 'Xinhua', 'ITAR-TASS','ABC', 'ACN', 'EPA','Fox News','FOX','Reuters','PA','AP','DPA', 'UPI','BNO','AHN','ANSA','NYT', 'NBC','BBC'])
+
+    # burde ikke fanges opp: (FBI), (ORHA), (SAS),
+
+    def matches_pattern(s, pats):
+        pat = "|".join("(\(.?%s.?\w*\))" % p for p in pats)
+        #print pat
+        mObj = re.search(pat, s, re.I)
+        #print mObj.group()
+        if bool(mObj):
+            print u"Nyhetabyrå: %s" % mObj.group()
+            return mObj.group()
+        else: 
+            return u'NA'
+
+
+    # look through the last part of the body text to find news bureau
+    dictionary['news_bureau'] = matches_pattern(dictionary['body'].strip()[-200:], syndicators)
+
+
+
     # Finn ut av språket. Merk at du kan stille inn innstillinger i settings.py.ta
-    (language, certainty) = langid.classify(body)
+    (language, certainty) = langid.classify(soup.body.article.text)
     language_code = uncertain_language_string
     if (certainty > language_identification_threshold):
         language_code = language
@@ -173,15 +217,7 @@ def nrk_2013_template(soup, data, dictionary):
     bildetekst = bildetekst[:-3] # Fjerner siste pipen
     dictionary['image_captions'] = bildetekst
 
-    # eventuelle faktabokser:
-    faktabokser = []
-    for boks in soup.find_all("section", class_="articlewidget cf facts lp_faktaboks"):
-        text = boks.text
-        lix = Lix(text)
-        analysis = lix.analyzeText(text)
-        faktabokser.append({"text":text, "links":boks.find_all("a"), "wordcount":analysis['wordCount']})
-        
-    dictionary['factbox'] = faktabokser
+
 
 
     # Dette er de data jeg ikke har fått til enda.

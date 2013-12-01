@@ -40,8 +40,8 @@ def add_to_db(dict):
     try:
         # Set up a database cursor:
         # Added charset='utf8' to default to utf8 for text to/from db
-        connection = mdb.connect(host=rdbms_hostname, user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
-        #connection = mdb.connect(unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock", user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
+        #connection = mdb.connect(host=rdbms_hostname, user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
+        connection = mdb.connect(unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock", user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
         cur = connection.cursor()
         cur.execute("USE nrk;")
         logger.info("koblet til databasen")
@@ -111,13 +111,16 @@ def add_to_db(dict):
         published = dict['published']
         if(published != "NULL") :
                published = datetime.fromtimestamp(mktime(dict['published'])).strftime("%Y-%m-%d %H:%M:%S")
-        updated = ""
+        #updated = ""
         timestamp = dict['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
-        if dict['updated'] != "NO UPDATES":
-            updated = (" ".join(elem for elem in dict['updated'])).replace('.', '-') + ":00"
-        else:
-            updated = published
-
+        # print dict['updated']
+        # if dict['updated']:
+        #     updated = (" ".join(elem for elem in dict['updated'])).replace('.', '-') + ":00"
+        # else:
+        #     pass
+        #     #updated = published
+        # print updated
+        print dict['updated']
 
         # print "*"*50
         # print type(dict['body']), dict['body']
@@ -129,7 +132,7 @@ def add_to_db(dict):
                      dict['headline'], #.encode('utf-8'),
                      dict['body'], #.encode('utf-8'),
                      published,
-                     updated,
+                     dict['updated'], #updated,
                      timestamp,
                      dict['fb_like'],
                      dict['fb_share'],
@@ -138,7 +141,7 @@ def add_to_db(dict):
                      dict['others_share'],
                      dict['language'], #.encode('utf-8'),
                      dict['lesbahet'],
-                     "NA", # Får ikke fatt på nyhetsbyrå enda.
+                     dict['news_bureau'], #"NA", # Får ikke fatt på nyhetsbyrå enda.
                      len(dict['external_links']),
                      len(dict['internal_links']),
                      dict['word_count'],
