@@ -1,7 +1,6 @@
 *.py[cod]
-*.db # my sequal lite files are too big…
-
-
+# my sequal lite files are too big…
+*.db 
 
 # skip this..
 Eirik/backup_nrk2013_13des.sql 
