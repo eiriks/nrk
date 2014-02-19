@@ -2,8 +2,10 @@
 # my sequal lite files are too big…
 *.db 
 
+Eirik/*.db
 # skip this..
 Eirik/backup_nrk2013_13des.sql 
+backup_nrk2013_13des.sql
 
 spam.log
 
