@@ -1,6 +1,6 @@
 *.py[cod]
-
 *.db # my sequal lite files are too big…
+
 
 
 # skip this..
