@@ -6,7 +6,7 @@ import urllib2
 from bs4 import BeautifulSoup
 import datetime 
 import requests  # requests.readthedocs.org 
-from templates import nrk_2013_template, nrk_2013_template
+from templates import nrk_2013_template, nrk_alfa_template
 from rdbms_insertion import add_to_db
 from analyze_url import analyze_url
 import re, sys
@@ -15,6 +15,8 @@ import sqlite3 as lite
 from connect_mysql import connect
 
 # set up logging
+# CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
+
 import logging
 from rainbow_logging_handler import RainbowLoggingHandler
 # create logger with 'tldextract'
@@ -78,17 +80,17 @@ def dispatch_on_template(soup, data, dictionary):
     # Vi vet også at den nye har en adresse til seg selv nederst, i motsetning til de gamle.
     if re.match("<!doctype html>", data) and len(re.findall('<input type="text" value=".*" readonly="readonly"', data)) == 1:
         dictionary['template'] = 'ny2013'
-        logger.info("template: %s", dictionary['template'] ) 
-        return nrk_2013_template(soup, data, dictionary)
+        #logger.info("template: %s", dictionary['template'] ) 
+        return nrk_2013_template.get(soup, data, dictionary)
     elif re.match('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', data):
         dictionary['template'] = 'gammel2013'
-        logger.info("template: %s", dictionary['template'] ) 
+        #logger.info("template: %s", dictionary['template'] ) 
         print "GAMMELT TEMPLATE, IKKE STØTTET ENDA."
         return False
     elif re.match("<!doctype html>", data) and len(soup.select("article.teaser")) == 1:
         dictionary['template'] = 'nrk_alfa'
-        logger.warn("template: %s url = %s" % (dictionary['template'],dictionary['url']))
-        return nrk_alfa_template(soup, data, dictionary) 
+        #logger.warn("template: %s url = %s" % (dictionary['template'],dictionary['url']))
+        return nrk_alfa_template.get(soup, data, dictionary) 
     else:
         dictionary['template'] = 'ukjent'
         logger.info("template: Uvisst hvilken template, vi hopper over denne.") 
@@ -104,7 +106,8 @@ def dispatch_on_template(soup, data, dictionary):
 ### Hovedfunksjoner
 
 ## Entry points
-def create_dictionary(url):           
+def create_dictionary(url):
+    logger.info("prover med url: %s \n", url)          
     dictionary = {'url':url, 'timestamp':datetime.datetime.now()}     # Oppretter første dictionary, med url og datetime for når vi laster ned.
     dictionary = analyze_url(dictionary)                              # Analyserer URL med hensyn på ting vi ville ha med.
     souplist = soup_from_url(url)

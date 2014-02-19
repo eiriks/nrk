@@ -40,8 +40,8 @@ INSERT INTO page (
  main_news_category,
  iframe,
  css,
- ja,
- tamplate)
+ js,
+ template)
  VALUES (
  %s,
  %s,

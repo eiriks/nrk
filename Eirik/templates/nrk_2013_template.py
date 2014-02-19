@@ -1,15 +1,12 @@
 # coding: utf-8
 import langid
 import re
-#from bs4 import BeautifulSoup
 from time import strptime
 from itertools import izip
-#from urllib2 import unquote
 from Lix import Lix
 from datetime import datetime
 from fetch_disqus_comments import num_comments
-#from settings import language_identification_threshold, uncertain_language_string
-from tell_lenker import tell
+from functions import count_links, count_js, count_css, count_iframes
 from settings import *
 import logging
 
@@ -18,7 +15,7 @@ new_logger = logging.getLogger('nrk2013.nrk_new_tamplate')
 ## This function does the Right Thing™ when given a beautifulsoup object created over an 
 ## nrk page with their new template
 ## This is mostly stolen from the old functions.
-def nrk_2013_template(soup, data, dictionary):
+def get(soup, data, dictionary):
     """Tar et BeautifulSoup objekt og returnerer et map av data
     Modifiserer dictionary argumentet du gir inn."""
 
@@ -34,7 +31,7 @@ def nrk_2013_template(soup, data, dictionary):
     # remove javascript.
     # if we want to measure amount of js or numbers of .js docs, do it here.
     # antall js dokumenter
-    dictionary['js'] = -9999 #  = len(re.findall("<iframe src=", data)) # .js
+    dictionary['js'] = count_js(soup, data, dictionary) #  = len(re.findall("<iframe src=", data)) # .js
 
     [s.decompose() for s in soup.body.article('script')]
     # I believe this is what creates the somewhat awkward line-breaks in the soup
@@ -163,12 +160,11 @@ def nrk_2013_template(soup, data, dictionary):
     # need to make this more complex...
     dictionary['video_files'] = dictionary['flash_file'] + dictionary['video_files_nrk']
 
-    # Tell opp iframe. BeautifulSoup teller feil på "http://www.nrk.no/mr/enorm-nedgang-i-antall-filmbutikker-1.11261850", så vi bruker en regex her istedenfor.
-    # Hvis noen finner ut hvordan jeg bruker BS istedenfor, gi meg en lyd. (soup.find_all("iframe") hvirket ikke) – Haakon
-    dictionary['iframe'] = len(re.findall("<iframe src=", data)) 
+    # Tell opp iframe. 
+    dictionary['iframe'] = count_iframes(soup, data, dictionary)
     
     # antall css dokumenter
-    dictionary['css'] = -9999
+    dictionary['css'] = count_css(soup, data, dictionary)
 
 
 
@@ -182,7 +178,7 @@ def nrk_2013_template(soup, data, dictionary):
         dictionary['comment_number'] = num_comments(dictionary)
     
     # tar seg av lenker i siden
-    tell(soup, data, dictionary)
+    count_links(soup, data, dictionary)
 
     # Find self declared url
     search = re.findall('<input type="text" value=".*" readonly="readonly"', data)
@@ -194,8 +190,10 @@ def nrk_2013_template(soup, data, dictionary):
     # antall bilder.
     # Beautiful Soup teller feil her og. Noe er galt.
     # Regex matching gir riktig resultat så vi får gå for det.
-    print len(re.findall("<img src=\"http:", data))
-    print soup.article.find_all('figure') # includes img of author...
+    #print len(re.findall("<img src=\"http:", data))
+    
+    # se nærmere på denne..
+    #print soup.article.find_all('figure') # includes img of author...
     
     #result = soup.article.find_all('figure', 'image')
     #print len(result)
@@ -219,19 +217,20 @@ def nrk_2013_template(soup, data, dictionary):
     # Dette er de data jeg ikke har fått til enda.
     # Dersom noen kan peke meg i retning av noen eksempler på sider med slike data på seg, blir jeg kjempeglad.
     # Jeg har sittet i flere timer på let, så jeg er litt frustrert over disse... ^_^
-    dictionary['map'] = -1
-    dictionary['image_collection'] = -1
-    dictionary['poll'] = -1
-    dictionary['game'] = -1
+    dictionary['map'] = -9999
+    dictionary['image_collection'] = -9999
+    dictionary['poll'] = -9999
+    dictionary['game'] = -9999
     
     # Jeg trenger litt hjelp til å finne gode eksempler på disse.
     # Send meg gjerne lenker!
-    dictionary['interactive_elements'] = dictionary['iframe']
+    dictionary['interactive_elements'] = -9999 #dictionary['iframe']
+
     
 
     # Disse rakk jeg rett og slett ikke å bli ferdig med.
     # Beklager! ;_;
-    dictionary['related_stories_box_les']      = -1
-    dictionary['related_stories_box_thematic'] = -1
+    dictionary['related_stories_box_les']      = -9999
+    dictionary['related_stories_box_thematic'] = -9999
 
     return dictionary

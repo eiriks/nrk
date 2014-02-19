@@ -1,15 +1,12 @@
 # coding: utf-8
 import langid
 import re
-#from bs4 import BeautifulSoup
 from time import strptime
 from itertools import izip
-#from urllib2 import unquote
 from Lix import Lix
 from datetime import datetime
 from fetch_disqus_comments import num_comments
-#from settings import language_identification_threshold, uncertain_language_string
-from tell_lenker import tell
+from functions import count_links, count_js, count_css, count_iframes
 from settings import *
 import logging
 
@@ -18,7 +15,7 @@ new_logger = logging.getLogger('nrk2013.alfatemplate')
 ## This function does the Right Thing™ when given a beautifulsoup object created over an 
 ## nrk page with their new template
 ## This is mostly stolen from the old functions.
-def nrk_alfa_template(soup, data, dictionary):
+def get(soup, data, dictionary):
     """Tar et BeautifulSoup objekt og returnerer et map av data
     Modifiserer dictionary argumentet du gir inn."""
 
@@ -31,11 +28,10 @@ def nrk_alfa_template(soup, data, dictionary):
     dictionary['email_share']      = 1
     dictionary['related_stories']  = 6
 
-    # remove javascript.
-    # if we want to measure amount of js or numbers of .js docs, do it here.
+
     # antall js dokumenter
-    dictionary['js'] = -9999 #  = len(re.findall("<iframe src=", data)) # .js
-    
+    dictionary['js'] = count_js(soup, data, dictionary) #  = len(re.findall("<iframe src=", data)) # .js
+    # remove javascript.
     [s.decompose() for s in soup.body.article('script')]
     # I believe this is what creates the somewhat awkward line-breaks in the soup
 
@@ -54,8 +50,8 @@ def nrk_alfa_template(soup, data, dictionary):
             address.figure.decompose()
     except AttributeError:
         # Finner ingen forfatter(e)
-        new_logger.ERROR("fant ingen forfatter")
-        print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
+        new_logger.warn("Ingen forfattere \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url']))
+        #print 
         authors.append([None, None, None])
     dictionary['authors'] = authors
     
@@ -63,13 +59,16 @@ def nrk_alfa_template(soup, data, dictionary):
     try:
         dictionary['published'] = strptime(soup.time['datetime'][0:19], "%Y-%m-%dT%H:%M:%S")
     except TypeError:
+        new_logger.info("finner ikke publiseringsdato")
         dictionary['published'] = None
 
+    print "published: ", type(dictionary['published'])
     # Find update datetime
     try:
         updated = soup.find('span', 'update-date')
         dictionary['updated'] = datetime.strptime(updated.time['datetime'][0:19], "%Y-%m-%dT%H:%M:%S")
     except:
+        new_logger.info("finner ikke oppdateringsdato")
         dictionary['updated'] = None
 
     # Find headline
@@ -93,19 +92,25 @@ def nrk_alfa_template(soup, data, dictionary):
         boks.decompose()
         # NB, this also removes pictures if any in the fact-box
     dictionary['factbox'] = faktabokser
-
+    print "faktaboksen: ", len(dictionary['factbox'])
 
     # Find full text 
     # article MINUS .universes OR is it .lp_related ?
     # remove the related section
-    try:
-        soup.body.article.find('section', 'lp_related').decompose()
-    except:
-        pass
-    # remove div.published (the top-bar)
-    soup.body.article.find('div', 'published').decompose()
-    # remove div.shareurl (the sharebar)
-    soup.body.article.find('div', 'sharing').decompose()
+    # try:
+    #     soup.body.article.find('section', 'lp_related').decompose()
+    # except:
+    #     pass
+    # # remove div.published (the top-bar)
+    # soup.body.article.find('div', 'published').decompose()
+    # # remove div.shareurl (the sharebar)
+    # soup.body.article.find('div', 'sharing').decompose()
+
+    # Find self declared url # get this before decomposing the header this is found in..
+    dictionary['url_self_link'] = soup.select("time > a")[0]['href']
+
+    # remove header with sharing links and date
+    soup.select(".bulletin-header")[0].decompose()
     # store body text
     dictionary['body'] = soup.body.article.text.strip() 
     # .stripped_strings option?
@@ -136,6 +141,7 @@ def nrk_alfa_template(soup, data, dictionary):
 
     # Find language. Defaults can be tampered with in settings.py
     (language, certainty) = langid.classify(soup.body.article.text)
+    print "(language, certainty)", (language, certainty)
     language_code = uncertain_language_string
     if (certainty > language_identification_threshold):
         language_code = language
@@ -165,10 +171,10 @@ def nrk_alfa_template(soup, data, dictionary):
 
     # Tell opp iframe. BeautifulSoup teller feil på "http://www.nrk.no/mr/enorm-nedgang-i-antall-filmbutikker-1.11261850", så vi bruker en regex her istedenfor.
     # Hvis noen finner ut hvordan jeg bruker BS istedenfor, gi meg en lyd. (soup.find_all("iframe") hvirket ikke) – Haakon
-    dictionary['iframe'] = len(re.findall("<iframe src=", data)) 
+    dictionary['iframe'] = count_iframes(soup, data, dictionary)
     
     # antall css dokumenter
-    dictionary['css'] = -9999
+    dictionary['css'] = count_css(soup, data, dictionary)
 
 
 
@@ -182,19 +188,12 @@ def nrk_alfa_template(soup, data, dictionary):
         dictionary['comment_number'] = num_comments(dictionary)
     
     # tar seg av lenker i siden
-    tell(soup, data, dictionary)
-
-    # Find self declared url
-    search = re.findall('<input type="text" value=".*" readonly="readonly"', data)
-    if len(search) > 1:
-        print "ERROR: MORE THAN ONE SELF-LINK"
-    dictionary['url_self_link'] = (search[0])[26:-21]
-
+    count_links(soup, data, dictionary)
 
     # antall bilder.
     # Beautiful Soup teller feil her og. Noe er galt.
     # Regex matching gir riktig resultat så vi får gå for det.
-    print len(re.findall("<img src=\"http:", data))
+    print "antall bilder: ", len(re.findall("<img src=\"http:", data))
     print soup.article.find_all('figure') # includes img of author...
     
     #result = soup.article.find_all('figure', 'image')
@@ -212,7 +211,7 @@ def nrk_alfa_template(soup, data, dictionary):
             bildetekst += ((funn[0])[5:-1] + " | ")
     bildetekst = bildetekst[:-3] # Fjerner siste pipen
     dictionary['image_captions'] = bildetekst
-
+    print "bildetekst: ", dictionary['image_captions'] 
 
 
 

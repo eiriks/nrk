@@ -45,125 +45,126 @@ def add_to_db(dict):
     # connection info in connect_mysql.py
     connection, cur = connect()
 
-    try:
+    # kommentrer ut try/except her for å finne en feil... 
+    #try:
         # Vi må være forsiktige med forfattere, fordi NRK ikke alltid klarer å huske på dem.
         # Se td. http://www.nrk.no/livsstil/test-av-norges-mest-solgte-brod-1.8352163, med tre forfattere.
-        for author in dict['authors']:
-            authorName = author[0]
-            if(authorName):
-                authorName = authorName
-            else:
-                authorName = None
-                
-            authorMail = author[1]
-            if(authorMail):
-                authorMail = authorMail
-            else:
-                authorMail = None
-                
-            authorRole = author[2]
-            if(authorRole):
-                authorRole = authorRole
-            else:
-                authorRole = None
-                
-            cur.execute(insertion_author,
-                        (dict['url_self_link'],
-                         authorName,
-                         authorMail,
-                         authorRole))
-                        
-        for box in dict['factbox']:
-            cur.execute(insertion_factbox,
-                        (dict['url_self_link'],
-                         len(box['links']),
-                         box['wordcount'],
-                         box['text'].encode('utf-8')))
-                
-                
-        for link in dict['internal_links']:
-            extr = tldextract.extract(link)
-            cur.execute(insertion_link.encode('utf-8'),
-                        (dict['url_self_link'].encode('utf-8'),
-                         link.encode('utf-8'),
-                         u"html",
-                         extr[0].encode('utf-8'),
-                         extr[1].encode('utf-8'),
-                         extr[2].encode('utf-8'),
-                         '1'.encode('utf-8')))
+    for author in dict['authors']:
+        authorName = author[0]
+        if(authorName):
+            authorName = authorName
+        else:
+            authorName = None
             
-        for link in dict['external_links']:
-            extr = tldextract.extract(link)
-            cur.execute(insertion_link.encode('utf-8'),
-                        (dict['url_self_link'].encode('utf-8'),
-                        link.encode('utf-8'),
-                        u"html",
-                        extr[0].encode('utf-8'),
-                        extr[1].encode('utf-8'),
-                        extr[2].encode('utf-8'),
-                        '0'.encode('utf-8')))
+        authorMail = author[1]
+        if(authorMail):
+            authorMail = authorMail
+        else:
+            authorMail = None
+            
+        authorRole = author[2]
+        if(authorRole):
+            authorRole = authorRole
+        else:
+            authorRole = None
+            
+        cur.execute(insertion_author,
+                    (dict['url_self_link'],
+                     authorName,
+                     authorMail,
+                     authorRole))
+                    
+    for box in dict['factbox']:
+        cur.execute(insertion_factbox,
+                    (dict['url_self_link'],
+                     len(box['links']),
+                     box['wordcount'],
+                     box['text'].encode('utf-8')))
+            
+            
+    for link in dict['internal_links']:
+        extr = tldextract.extract(link)
+        cur.execute(insertion_link.encode('utf-8'),
+                    (dict['url_self_link'].encode('utf-8'),
+                     link.encode('utf-8'),
+                     u"html",
+                     extr[0].encode('utf-8'),
+                     extr[1].encode('utf-8'),
+                     extr[2].encode('utf-8'),
+                     '1'.encode('utf-8')))
+        
+    for link in dict['external_links']:
+        extr = tldextract.extract(link)
+        cur.execute(insertion_link.encode('utf-8'),
+                    (dict['url_self_link'].encode('utf-8'),
+                    link.encode('utf-8'),
+                    u"html",
+                    extr[0].encode('utf-8'),
+                    extr[1].encode('utf-8'),
+                    extr[2].encode('utf-8'),
+                    '0'.encode('utf-8')))
 
-        published = dict['published']
-        if(published != "NULL") :
-               published = datetime.fromtimestamp(mktime(dict['published'])).strftime("%Y-%m-%d %H:%M:%S")
-        #updated = ""
-        timestamp = dict['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
-        # print dict['updated']
-        # if dict['updated']:
-        #     updated = (" ".join(elem for elem in dict['updated'])).replace('.', '-') + ":00"
-        # else:
-        #     pass
-        #     #updated = published
-        # print updated
+    published = dict['published']
+    if(published != "NULL") :
+           published = datetime.fromtimestamp(mktime(dict['published'])).strftime("%Y-%m-%d %H:%M:%S")
+    #updated = ""
+    timestamp = dict['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
+    # print dict['updated']
+    # if dict['updated']:
+    #     updated = (" ".join(elem for elem in dict['updated'])).replace('.', '-') + ":00"
+    # else:
+    #     pass
+    #     #updated = published
+    # print updated
 
 
-        cur.execute(insertion,
-                    (dict['url'],
-                     dict['url_self_link'],
-                     dict['headline'], #.encode('utf-8'),
-                     dict['body'], #.encode('utf-8'),
-                     published,
-                     dict['updated'], #updated,
-                     timestamp,
-                     dict['fb_like'],
-                     dict['fb_share'],
-                     dict['googleplus_share'],
-                     dict['twitter_share'],
-                     dict['others_share'],
-                     dict['language'], #.encode('utf-8'),
-                     dict['lesbahet'],
-                     dict['news_bureau'], #"NA", # Får ikke fatt på nyhetsbyrå enda.
-                     len(dict['external_links']),
-                     len(dict['internal_links']),
-                     dict['word_count'],
-                     dict['line_count'],
-                     dict['char_count'],
-                     len(dict['factbox']),
-                     dict['comment_fields'],
-                     dict['comment_number'],
-                     dict['interactive_elements'], #"interactive_elements IS NOT DONE",
-                     dict['poll'], #"NOT DONE",
-                     dict['game'], #"NOT DONE",
-                     dict['video_files'],
-                     dict['video_files_nrk'],
-                     dict['flash_file'],
-                     dict['image_collection'],
-                     dict['images'],
-                     dict['image_captions'],# .encode('utf-8'),
-                     dict['related_stories'],
-                     dict['related_stories_box_thematic'], #"related_stories_box_thematic IS NOT DONE",
-                     dict['related_stories_box_les'],           #"related_stories_box_les IS NOT DONE",
-                     dict['map'],  # map IS NOT DONE
-                     dict['publiseringssted'],
-                     dict['programtilknytning'],
-                     dict['hovedkategori'],
-                     dict['iframe'],
-                     dict['css'],
-                     dict['js'],
-                     dict['template']))
+    cur.execute(insertion,
+                (dict['url'],
+                 dict['url_self_link'],
+                 dict['headline'], #.encode('utf-8'),
+                 dict['body'], #.encode('utf-8'),
+                 published,
+                 dict['updated'], #updated,
+                 timestamp,
+                 dict['fb_like'],
+                 dict['fb_share'],
+                 dict['googleplus_share'],
+                 dict['twitter_share'],
+                 dict['others_share'],
+                 dict['language'], #.encode('utf-8'),
+                 dict['lesbahet'],
+                 dict['news_bureau'], #"NA", # Får ikke fatt på nyhetsbyrå enda.
+                 len(dict['external_links']),
+                 len(dict['internal_links']),
+                 dict['word_count'],
+                 dict['line_count'],
+                 dict['char_count'],
+                 len(dict['factbox']),
+                 dict['comment_fields'],
+                 dict['comment_number'],
+                 dict['interactive_elements'], #"interactive_elements IS NOT DONE",
+                 dict['poll'], #"NOT DONE",
+                 dict['game'], #"NOT DONE",
+                 dict['video_files'],
+                 dict['video_files_nrk'],
+                 dict['flash_file'],
+                 dict['image_collection'],
+                 dict['images'],
+                 dict['image_captions'],# .encode('utf-8'),
+                 dict['related_stories'],
+                 dict['related_stories_box_thematic'], #"related_stories_box_thematic IS NOT DONE",
+                 dict['related_stories_box_les'],           #"related_stories_box_les IS NOT DONE",
+                 dict['map'],  # map IS NOT DONE
+                 dict['publiseringssted'],
+                 dict['programtilknytning'],
+                 dict['hovedkategori'],
+                 dict['iframe'],
+                 dict['css'],
+                 dict['js'],
+                 dict['template']))
 
-        connection.commit()
-        return
-    except:
-        print "hva?! SLutten av rdbms_insertion.py. hadde ikke ventet å komme hit. noe "
-        rdbms_logger.error("DB insert feilet!")
+    connection.commit()
+    return
+    #except:
+    #    print "hva?! SLutten av rdbms_insertion.py. hadde ikke ventet å komme hit. noe "
+    #    rdbms_logger.error("DB insert feilet!")
