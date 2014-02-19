@@ -3,6 +3,13 @@
 # Bare et sted å legge kommentarer
 
 
+20 feb.
+- prøver å reorganisere til ulike templater som behandler ulike nrk-design.
+- prøver å samle mer generelle funksjoner som brukes på tvers i functions.py
+- Trenger å dobbeltsjekke alle variabler og rigiditeten av disse.
+- særlig variabler med -1 eller -9999 trenger ekstra oppmerksomhet.
+
+
 
 15. okt, går igjennom første resultatset fra scrapingen.
 
