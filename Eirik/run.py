@@ -6,15 +6,17 @@ import urllib2
 from bs4 import BeautifulSoup
 import datetime 
 import requests  # requests.readthedocs.org 
-from nrk_new_template import nrk_2013_template
+from templates import nrk_2013_template, nrk_2013_template
 from rdbms_insertion import add_to_db
 from analyze_url import analyze_url
 import re, sys
 import sqlite3 as lite
-import logging
+
 from connect_mysql import connect
 
 # set up logging
+import logging
+from rainbow_logging_handler import RainbowLoggingHandler
 # create logger with 'tldextract'
 logger = logging.getLogger('nrk2013')
 logger.setLevel(logging.DEBUG)
@@ -22,15 +24,29 @@ logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler('spam.log')
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG) # logging.ERROR # til skjerm, antagelig vis.
+#ch = logging.StreamHandler()
+#ch.setLevel(logging.DEBUG) # logging.ERROR # til skjerm, antagelig vis.
+rainbow_handler = RainbowLoggingHandler(sys.stderr, color_funcName=('black', 'yellow', True))
+rainbow_handler.setLevel(logging.DEBUG)
+
 # create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# logging.Formatter() '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+formatter = logging.Formatter("[%(asctime)s] %(name)s %(funcName)s():%(lineno)d\t%(message)s")
+
+#
+
+
+#rainbow_handler.setLevel(logging.DEBUG)
+
+
 fh.setFormatter(formatter)
-ch.setFormatter(formatter)
+#ch.setFormatter(formatter)
+rainbow_handler.setFormatter(formatter)
+
 # add the handlers to the logger
+logger.addHandler(rainbow_handler)
 logger.addHandler(fh)
-logger.addHandler(ch)
+#logger.addHandler(ch)
 
 
 # Dette skulle hjelpe?
@@ -62,17 +78,30 @@ def dispatch_on_template(soup, data, dictionary):
     # Vi vet også at den nye har en adresse til seg selv nederst, i motsetning til de gamle.
     if re.match("<!doctype html>", data) and len(re.findall('<input type="text" value=".*" readonly="readonly"', data)) == 1:
         dictionary['template'] = 'ny2013'
+        logger.info("template: %s", dictionary['template'] ) 
         return nrk_2013_template(soup, data, dictionary)
     elif re.match('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', data):
         dictionary['template'] = 'gammel2013'
+        logger.info("template: %s", dictionary['template'] ) 
         print "GAMMELT TEMPLATE, IKKE STØTTET ENDA."
         return False
+    elif re.match("<!doctype html>", data) and len(soup.select("article.teaser")) == 1:
+        dictionary['template'] = 'nrk_alfa'
+        logger.warn("template: %s url = %s" % (dictionary['template'],dictionary['url']))
+        return nrk_alfa_template(soup, data, dictionary) 
     else:
         dictionary['template'] = 'ukjent'
-        print "Uvisst hvilken template, vi hopper over denne."
+        logger.info("template: Uvisst hvilken template, vi hopper over denne.") 
+        #print "Uvisst hvilken template, vi hopper over denne."
+        print soup.select("article.teaser"), len(soup.select("article.teaser"))
+        print dictionary
         return False
+    
+    # tror at article.teaser er indikasjon på "alfa"-template
 
-  ### Hovedfunksjoner
+
+
+### Hovedfunksjoner
 
 ## Entry points
 def create_dictionary(url):           
@@ -97,7 +126,7 @@ def run_from_sqlite():
     try:
         lite_con = lite.connect('nrk2013.db')    
         lite_cur = lite_con.cursor()    
-        lite_sql = 'SELECT * FROM links ORDER BY date DESC LIMIT 5'
+        lite_sql = 'SELECT * FROM links ORDER BY date DESC LIMIT 10'
         lite_cur.execute(lite_sql) # 'SELECT SQLITE_VERSION()'        
         rows = lite_cur.fetchall()   #fetchone()
 
@@ -105,14 +134,13 @@ def run_from_sqlite():
         connection, cur = connect()
 
         # loop through SQLite set
-
         for row in rows:
             #print row[0], row[1], row[2] # 1 er url, 2 er tidspunkt for innsamling 
             # check if url is in mysql as url or url_self_link (either is fine)
             query = "SELECT * FROM page WHERE url = '%s' OR url_self_link = '%s'" % (row[1], row[1])
             cur.execute(query)
             rows = cur.fetchall()
-            print len(rows), row[1]
+            #print len(rows), row[1] # 1 full url hvis finnes i mysql
             if not len(rows):
                 print "finnes, ikke, må settes inn"
                 create_dictionary(row[1])

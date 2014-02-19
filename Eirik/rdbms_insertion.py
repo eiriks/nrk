@@ -30,7 +30,7 @@ def add_to_db(dict):
     # logger.addHandler(fh)
     # logger.addHandler(ch)
     # <added local logger>
-    rdbms_logger = logging.getLogger('nrk2013.rdbms_insertion')
+    rdbms_logger = logging.getLogger('nrk2013')#nrk2013.rdbms_insertion')
 
     with open('insertion.sql', 'r') as f:
         insertion = f.read()
