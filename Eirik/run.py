@@ -61,7 +61,7 @@ def soup_from_url(url):
        Nå som vi er under utvikling returnerer vi en suppe basert på en html-fil vi allerede har lagret."""
     try:
         request  = requests.get(url)
-        data = request.text # Dette er det vi egentlig skal gjøre
+        data = request.text
         #request.close() # Forhåpentligvis fikser dette problemet med at vi har for mange filer oppe
     except requests.exceptions.TooManyRedirects: # Dette skjedde på noen radiokanaler eller noe.
         print "{} has does not evaluate properly, and we will infinitely redirect".format(url)
@@ -124,7 +124,6 @@ def create_dictionary(url):
 
 
 def run_from_sqlite():
-    logger.info("vi kjører")
     con = None
     try:
         lite_con = lite.connect('nrk2013.db')    
@@ -145,7 +144,7 @@ def run_from_sqlite():
             rows = cur.fetchall()
             #print len(rows), row[1] # 1 full url hvis finnes i mysql
             if not len(rows):
-                print "finnes, ikke, må settes inn"
+                logger.info( "finnes, ikke, må settes inn" )
                 create_dictionary(row[1])
     
                 # hvis ikke, finn ut hvilken tamplate som er i bruk
@@ -161,12 +160,11 @@ def run_from_sqlite():
             con.close()
 
 
-if __name__ == '__main__':
-    run_from_sqlite()
-
-
-
-
+def run_test_urlz():
+    for url in test_urlz:
+        create_dictionary(url)
+        #import webbrowser
+        #webbrowser.open(url=url,new=2)
 
 test_urlz = [   'http://www.nrk.no/verden/opp-mot-80-batflyktninger-druknet-1.11277059',
     'http://www.nrk.no/ytring/boligprisene-faller.-og-hva-sa_-1.11387030','http://www.nrk.no/viten/enno-hap-for-ison-1.11386243',
@@ -215,3 +213,37 @@ test_urlz = [   'http://www.nrk.no/verden/opp-mot-80-batflyktninger-druknet-1.11
     'http://www.nrk.no/verden/kamper-om-bagdad-1.677611','http://www.nrk.no/sport/anand-snakker-ut-etter-tapet-1.11388050',
     'http://www.nrk.no/livsstil/hvordan-bli-den-ultimate-jegeren-1.11286386','http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493',
     'http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181', 'http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972']
+
+
+if __name__ == '__main__':
+    #run_from_sqlite()
+    #run_test_urlz()
+    #
+    create_dictionary("http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972") # youtube
+    create_dictionary("http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181") # mange NRK-videoer
+    create_dictionary("http://www.nrk.no/kultur/tom-clancy-er-dod-1.11275817") # twitter 
+    create_dictionary("http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493") # faktaboks
+    create_dictionary("http://www.nrk.no/mat/1.11275477") # mat-template? 
+    create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
+    create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
+    create_dictionary("http://www.yr.no/nyheter/1.11274768") # yr-template, gammel?
+    create_dictionary("http://www.nrk.no/programmer/tv/melodi_grand_prix/1.11122386") # gammel template?
+    create_dictionary("http://p3.no/filmpolitiet/2013/10/gaten-ragnarok/") # p3-tamplate?
+    create_dictionary("http://p3.no/filmpolitiet/2013/09/breaking-bad-er-ferdig-kva-no/") # p3 + youtube
+    create_dictionary("http://p3.no/filmpolitiet/2013/10/rush/") # p3 + nrk-video + youtube
+    create_dictionary("http://www.nrk.no/direkte/") # alfa-portal, hva gjør vi her?   
+    create_dictionary("http://www.nrk.no/nyheter/innenriks/valg/valg2011/1.7790668") # gammel template?
+    create_dictionary("http://www.nrk.no/sport/fotball/disse-lagene-er-vm-klare-1.11047107") # mange faktabokser
+    create_dictionary("http://www.nrk.no/valg2013/valgomat/") # multimedia-greier
+    create_dictionary("http://www.nrk.no/valg2013/mandatfordelingen-2013-1.11225451") # multimedia-greier
+    create_dictionary("http://www.nrk.no/sapmi/samegillii/sami-daidda-mielde-kultur_iehtadusa-1.11276898") # samisk tekst
+    create_dictionary("http://www.nrk.no/livsstil/lykketest/") # interaktiv sak..
+    create_dictionary("http://www.nrk.no/livsstil/kaffekalkulator-1.11266219") # kalkulator.. (form = interaktivt element?)
+    create_dictionary("http://www.nrk.no/kultur/freddy-fairhair-skaper-reaksjoner-1.11275174") # twitter + youtube
+    create_dictionary("http://www.nrk.no/norge/flere-forteller-om-trakassering-1.11276009")   # twitter + nrk-video
+    create_dictionary("http://www.nrk.no/hordaland/heftig-nordlys-pa-voss-i-natt-1.11276620") # youtube 
+    create_dictionary("http://www.nrk.no/fordypning/lydband-fra-studentersamfundet-1.11248706") # nrk-lydfiler
+    create_dictionary("http://www.nrk.no/viten/enno-hap-for-ison-1.11386243") # interaktiv grafikk 
+
+
+

@@ -62,7 +62,7 @@ def get(soup, data, dictionary):
         new_logger.info("finner ikke publiseringsdato")
         dictionary['published'] = None
 
-    print "published: ", type(dictionary['published'])
+    new_logger.debug("published: %s", type(dictionary['published']))
     # Find update datetime
     try:
         updated = soup.find('span', 'update-date')
@@ -76,7 +76,7 @@ def get(soup, data, dictionary):
         dictionary['headline'] = soup.body.article.find('h1').text.strip()
         #dictionary['headline'] = soup.header.find('div', 'articletitle').h1.text # .text gived unicode, .string gives 'bs4.element.NavigableString'
     except AttributeError:
-        print "NB: bruker doc-title..."
+        new_logger.debug( "NB: bruker doc-title..." )
         dictionary['headline'] = soup.title.text
 
     # Find fact-boxes :
@@ -92,7 +92,8 @@ def get(soup, data, dictionary):
         boks.decompose()
         # NB, this also removes pictures if any in the fact-box
     dictionary['factbox'] = faktabokser
-    print "faktaboksen: ", len(dictionary['factbox'])
+
+    new_logger.debug("faktabokser: %s", len(dictionary['factbox']))
 
     # Find full text 
     # article MINUS .universes OR is it .lp_related ?
@@ -125,14 +126,11 @@ def get(soup, data, dictionary):
         dictionary['line_count'] = analyse['sentenceCount']
         dictionary['lesbahet'] = lix.get_lix_score()
     except TypeError:
-        print "[ERROR] Kunne ikke opprette analyse. \n [DEBUG] Body:"
-        print dictionary['body'], "[DEBUG] /Body"
+        new_logger.error("Kunne ikke kjøre lix", dictionary['body']) 
         dictionary['line_count'] = None
         dictionary['word_count'] = None
         dictionary['char_count'] = None
         dictionary['lesbahet'] = -1.0
-
-
 
     # look through the last part of the body text to find news bureau
     # add more in settings.py
@@ -141,7 +139,7 @@ def get(soup, data, dictionary):
 
     # Find language. Defaults can be tampered with in settings.py
     (language, certainty) = langid.classify(soup.body.article.text)
-    print "(language, certainty)", (language, certainty)
+    new_logger.debug( "(language, certainty) (%s, %s)" % (language, certainty))
     language_code = uncertain_language_string
     if (certainty > language_identification_threshold):
         language_code = language
@@ -169,10 +167,8 @@ def get(soup, data, dictionary):
     # need to make this more complex...
     dictionary['video_files'] = dictionary['flash_file'] + dictionary['video_files_nrk']
 
-    # Tell opp iframe. BeautifulSoup teller feil på "http://www.nrk.no/mr/enorm-nedgang-i-antall-filmbutikker-1.11261850", så vi bruker en regex her istedenfor.
-    # Hvis noen finner ut hvordan jeg bruker BS istedenfor, gi meg en lyd. (soup.find_all("iframe") hvirket ikke) – Haakon
+    # Tell opp iframe. 
     dictionary['iframe'] = count_iframes(soup, data, dictionary)
-    
     # antall css dokumenter
     dictionary['css'] = count_css(soup, data, dictionary)
 
@@ -193,7 +189,7 @@ def get(soup, data, dictionary):
     # antall bilder.
     # Beautiful Soup teller feil her og. Noe er galt.
     # Regex matching gir riktig resultat så vi får gå for det.
-    print "antall bilder: ", len(re.findall("<img src=\"http:", data))
+    new_logger.debug( "antall bilder: %s", len(re.findall("<img src=\"http:", data)) )
     print soup.article.find_all('figure') # includes img of author...
     
     #result = soup.article.find_all('figure', 'image')
@@ -202,8 +198,8 @@ def get(soup, data, dictionary):
 
 
     # Som diskutert med Eirik, dette henter ut bildetekstene og deler dem med pipe symboler.
-    # Måtte den som kommer etterpå ikke himle så altfor mye med øynene når de ser dette... :o
-    imgtagger = re.findall(u"<img src=\"http.*\n.*", data)
+
+    imgtagger = re.findall(u"<img src=\"http.*\n.*", str(soup.body.article) )
     bildetekst = ""
     for imgtag in imgtagger:
         funn = re.findall("alt=\".*\"", imgtag)
@@ -211,26 +207,24 @@ def get(soup, data, dictionary):
             bildetekst += ((funn[0])[5:-1] + " | ")
     bildetekst = bildetekst[:-3] # Fjerner siste pipen
     dictionary['image_captions'] = bildetekst
-    print "bildetekst: ", dictionary['image_captions'] 
-
 
 
     # Dette er de data jeg ikke har fått til enda.
     # Dersom noen kan peke meg i retning av noen eksempler på sider med slike data på seg, blir jeg kjempeglad.
     # Jeg har sittet i flere timer på let, så jeg er litt frustrert over disse... ^_^
-    dictionary['map'] = -1
-    dictionary['image_collection'] = -1
-    dictionary['poll'] = -1
-    dictionary['game'] = -1
+    dictionary['map'] = -9999
+    dictionary['image_collection'] = -9999
+    dictionary['poll'] = -9999
+    dictionary['game'] = -9999
     
     # Jeg trenger litt hjelp til å finne gode eksempler på disse.
     # Send meg gjerne lenker!
-    dictionary['interactive_elements'] = dictionary['iframe']
+    dictionary['interactive_elements'] = -9999 # dictionary['iframe']
     
 
     # Disse rakk jeg rett og slett ikke å bli ferdig med.
     # Beklager! ;_;
-    dictionary['related_stories_box_les']      = -1
-    dictionary['related_stories_box_thematic'] = -1
+    dictionary['related_stories_box_les']      = -9999
+    dictionary['related_stories_box_thematic'] = -9999
 
     return dictionary

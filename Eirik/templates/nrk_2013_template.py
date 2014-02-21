@@ -11,7 +11,7 @@ from settings import *
 import logging
 
 
-new_logger = logging.getLogger('nrk2013.nrk_new_tamplate')
+new_logger = logging.getLogger('nrk2013.nrk_2013_tamplate')
 ## This function does the Right Thing™ when given a beautifulsoup object created over an 
 ## nrk page with their new template
 ## This is mostly stolen from the old functions.
@@ -51,8 +51,8 @@ def get(soup, data, dictionary):
             address.figure.decompose()
     except AttributeError:
         # Finner ingen forfatter(e)
-        new_logger.ERROR("fant ingen forfatter")
-        print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
+        new_logger.error("fant ingen forfatter, oppgir ukjent")
+        #print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
         authors.append([None, None, None])
     dictionary['authors'] = authors
     
@@ -74,7 +74,7 @@ def get(soup, data, dictionary):
         dictionary['headline'] = soup.body.article.find('h1').text.strip()
         #dictionary['headline'] = soup.header.find('div', 'articletitle').h1.text # .text gived unicode, .string gives 'bs4.element.NavigableString'
     except AttributeError:
-        print "NB: bruker doc-title..."
+        new_logger.warn("NB: bruker doc-title...")
         dictionary['headline'] = soup.title.text
 
     # Find fact-boxes :
@@ -117,8 +117,7 @@ def get(soup, data, dictionary):
         dictionary['line_count'] = analyse['sentenceCount']
         dictionary['lesbahet'] = lix.get_lix_score()
     except TypeError:
-        print "[ERROR] Kunne ikke opprette analyse. \n [DEBUG] Body:"
-        print dictionary['body'], "[DEBUG] /Body"
+        new_logger.error( "Kunne ikke kjøre lix", dictionary['body'] )
         dictionary['line_count'] = None
         dictionary['word_count'] = None
         dictionary['char_count'] = None

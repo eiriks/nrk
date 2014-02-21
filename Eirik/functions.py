@@ -17,11 +17,11 @@ def count_js(soup, data, dictionary):
     '''As js can be internal and external, a char count is perhaps a good indicator?'''
     count = 0
 
-    print "antall script-tagger", len(soup.select("script"))
+    logger.debug("antall script-tagger: %s", len(soup.select("script")) )
     #print soup.select("script")
     a = "".join([l.text for l in soup.select("script")])
 
-    print "antall karakterer i script : ", len(a)
+    logger.debug( "antall karakterer i script %s: ", len(a) )
     count+=len(a)
     # then external scripts
     for doc in soup.select("script[src]"):
@@ -33,7 +33,7 @@ def count_js(soup, data, dictionary):
         logger.info(js_url)
         r = requests.get(js_url)
         #print r.text
-        print "lengde på eksternt js: ", len(r.text)
+        logger.debug( "lengde på eksternt js: %s", len(r.text) )
         count+=len(r.text)
         #print "count: ", count
     return count        
@@ -43,7 +43,7 @@ def count_css(soup, data, dictionary):
     count = 0
     # add internal css
     count += len("".join([l.text for l in soup.select("style")]))
-    print "antall css-karakterer", count
+    logger.debug( "antall css-karakterer %s", count )
     # then external 
     for doc in soup.select("link[rel^stylesheet]"):
         if doc['href'].startswith("http"):

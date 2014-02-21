@@ -27,5 +27,5 @@ def connect():
 def disconnect(connection):
     if connection:
         connection.close()
-        connect_logger.info("koblet av mysql")
+        connect_logger.notset("koblet av mysql")
         
