@@ -8,6 +8,37 @@ import requests
 
 logger = logging.getLogger('nrk2013.nrk_new_tamplate')
 
+def get_video(soup, data, dictionary):
+    video_markup = [] 
+    VIDEOS_TAGS = ['iframe', 'embed', 'object', 'video']
+    VIDEO_PROVIDERS = ['youtube', 'vimeo', 'dailymotion', 'kewego']
+    #print ",".join(VIDEOS_TAGS)
+    for t in VIDEOS_TAGS:
+        if soup.find_all(t):
+            video_markup.append(soup.find_all(t))
+ 
+        # ser ut som eksistensen av en data-video-id="118648" kan være en bedre indikator.. 
+    nrk_videoer = soup.select('figure.video')
+    print nrk_videoer
+
+    print "antall nrk-videoer: ", len(nrk_videoer)
+
+    test = soup.find_all(",".join(VIDEOS_TAGS))
+    print test
+    videoTags = soup.find_all(",".join(VIDEOS_TAGS))
+    print videoTags
+
+    print video_markup
+
+    # Count videos (this seems to work):
+    # dictionary['video_files_nrk'] = len(re.findall('<div class="video-player">', data))
+    # # vimeo & others need to be included...
+    # dictionary['flash_file'] = len(re.findall('class="youtube-player"', data))
+    # # need to make this more complex...
+    # dictionary['video_files'] = dictionary['flash_file'] + dictionary['video_files_nrk']
+
+    return 
+
 def count_iframes(soup, data, dictionary):
     # Tell opp iframe. BeautifulSoup teller feil på "http://www.nrk.no/mr/enorm-nedgang-i-antall-filmbutikker-1.11261850", så vi bruker en regex her istedenfor.
     # Hvis noen finner ut hvordan jeg bruker BS istedenfor, gi meg en lyd. (soup.find_all("iframe") hvirket ikke) – Haakon

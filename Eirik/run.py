@@ -219,31 +219,31 @@ if __name__ == '__main__':
     #run_from_sqlite()
     #run_test_urlz()
     #
-    create_dictionary("http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972") # youtube
+    #create_dictionary("http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972") # youtube
     create_dictionary("http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181") # mange NRK-videoer
-    create_dictionary("http://www.nrk.no/kultur/tom-clancy-er-dod-1.11275817") # twitter 
-    create_dictionary("http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493") # faktaboks
-    create_dictionary("http://www.nrk.no/mat/1.11275477") # mat-template? 
-    create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
-    create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
-    create_dictionary("http://www.yr.no/nyheter/1.11274768") # yr-template, gammel?
-    create_dictionary("http://www.nrk.no/programmer/tv/melodi_grand_prix/1.11122386") # gammel template?
-    create_dictionary("http://p3.no/filmpolitiet/2013/10/gaten-ragnarok/") # p3-tamplate?
-    create_dictionary("http://p3.no/filmpolitiet/2013/09/breaking-bad-er-ferdig-kva-no/") # p3 + youtube
-    create_dictionary("http://p3.no/filmpolitiet/2013/10/rush/") # p3 + nrk-video + youtube
-    create_dictionary("http://www.nrk.no/direkte/") # alfa-portal, hva gjør vi her?   
-    create_dictionary("http://www.nrk.no/nyheter/innenriks/valg/valg2011/1.7790668") # gammel template?
-    create_dictionary("http://www.nrk.no/sport/fotball/disse-lagene-er-vm-klare-1.11047107") # mange faktabokser
-    create_dictionary("http://www.nrk.no/valg2013/valgomat/") # multimedia-greier
-    create_dictionary("http://www.nrk.no/valg2013/mandatfordelingen-2013-1.11225451") # multimedia-greier
-    create_dictionary("http://www.nrk.no/sapmi/samegillii/sami-daidda-mielde-kultur_iehtadusa-1.11276898") # samisk tekst
-    create_dictionary("http://www.nrk.no/livsstil/lykketest/") # interaktiv sak..
-    create_dictionary("http://www.nrk.no/livsstil/kaffekalkulator-1.11266219") # kalkulator.. (form = interaktivt element?)
-    create_dictionary("http://www.nrk.no/kultur/freddy-fairhair-skaper-reaksjoner-1.11275174") # twitter + youtube
-    create_dictionary("http://www.nrk.no/norge/flere-forteller-om-trakassering-1.11276009")   # twitter + nrk-video
-    create_dictionary("http://www.nrk.no/hordaland/heftig-nordlys-pa-voss-i-natt-1.11276620") # youtube 
-    create_dictionary("http://www.nrk.no/fordypning/lydband-fra-studentersamfundet-1.11248706") # nrk-lydfiler
-    create_dictionary("http://www.nrk.no/viten/enno-hap-for-ison-1.11386243") # interaktiv grafikk 
+    # create_dictionary("http://www.nrk.no/kultur/tom-clancy-er-dod-1.11275817") # twitter 
+    # create_dictionary("http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493") # faktaboks
+    # create_dictionary("http://www.nrk.no/mat/1.11275477") # mat-template? 
+    # create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
+    # create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
+    # create_dictionary("http://www.yr.no/nyheter/1.11274768") # yr-template, gammel?
+    # create_dictionary("http://www.nrk.no/programmer/tv/melodi_grand_prix/1.11122386") # gammel template?
+    # create_dictionary("http://p3.no/filmpolitiet/2013/10/gaten-ragnarok/") # p3-tamplate?
+    # create_dictionary("http://p3.no/filmpolitiet/2013/09/breaking-bad-er-ferdig-kva-no/") # p3 + youtube
+    # create_dictionary("http://p3.no/filmpolitiet/2013/10/rush/") # p3 + nrk-video + youtube
+    # create_dictionary("http://www.nrk.no/direkte/") # alfa-portal, hva gjør vi her?   
+    # create_dictionary("http://www.nrk.no/nyheter/innenriks/valg/valg2011/1.7790668") # gammel template?
+    # create_dictionary("http://www.nrk.no/sport/fotball/disse-lagene-er-vm-klare-1.11047107") # mange faktabokser
+    # create_dictionary("http://www.nrk.no/valg2013/valgomat/") # multimedia-greier
+    # create_dictionary("http://www.nrk.no/valg2013/mandatfordelingen-2013-1.11225451") # multimedia-greier
+    # create_dictionary("http://www.nrk.no/sapmi/samegillii/sami-daidda-mielde-kultur_iehtadusa-1.11276898") # samisk tekst
+    # create_dictionary("http://www.nrk.no/livsstil/lykketest/") # interaktiv sak..
+    # create_dictionary("http://www.nrk.no/livsstil/kaffekalkulator-1.11266219") # kalkulator.. (form = interaktivt element?)
+    # create_dictionary("http://www.nrk.no/kultur/freddy-fairhair-skaper-reaksjoner-1.11275174") # twitter + youtube
+    # create_dictionary("http://www.nrk.no/norge/flere-forteller-om-trakassering-1.11276009")   # twitter + nrk-video
+    # create_dictionary("http://www.nrk.no/hordaland/heftig-nordlys-pa-voss-i-natt-1.11276620") # youtube 
+    # create_dictionary("http://www.nrk.no/fordypning/lydband-fra-studentersamfundet-1.11248706") # nrk-lydfiler
+    # create_dictionary("http://www.nrk.no/viten/enno-hap-for-ison-1.11386243") # interaktiv grafikk 
 
 
 

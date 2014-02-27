@@ -6,7 +6,7 @@ from itertools import izip
 from Lix import Lix
 from datetime import datetime
 from fetch_disqus_comments import num_comments
-from functions import count_links, count_js, count_css, count_iframes
+from functions import count_links, count_js, count_css, count_iframes, get_video
 from settings import *
 import logging
 
@@ -152,12 +152,9 @@ def get(soup, data, dictionary):
     – Haakon
     '''
 
-    # Count videos (this seems to work):
-    dictionary['video_files_nrk'] = len(re.findall('<div class="video-player">', data))
-    # vimeo & others need to be included...
-    dictionary['flash_file'] = len(re.findall('class="youtube-player"', data))
-    # need to make this more complex...
-    dictionary['video_files'] = dictionary['flash_file'] + dictionary['video_files_nrk']
+    dictionary['bogus'] = get_video(soup, data, dictionary)
+
+
 
     # Tell opp iframe. 
     dictionary['iframe'] = count_iframes(soup, data, dictionary)
