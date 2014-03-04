@@ -151,9 +151,12 @@ def get(soup, data, dictionary):
 
     – Haakon
     '''
+    # only send the stuff in article-tag as soup
+    # sets  dictionary['video_files'], dictionary['video_files_nrk'] 
+    get_video(soup.body.article, data, dictionary)
 
-    dictionary['bogus'] = get_video(soup, data, dictionary)
 
+    dictionary['flash_file'] = -9999
 
 
     # Tell opp iframe. 
@@ -214,12 +217,15 @@ def get(soup, data, dictionary):
     # Dersom noen kan peke meg i retning av noen eksempler på sider med slike data på seg, blir jeg kjempeglad.
     # Jeg har sittet i flere timer på let, så jeg er litt frustrert over disse... ^_^
     dictionary['map'] = -9999
-    dictionary['image_collection'] = -9999
+
+    dictionary['image_collection'] = len(soup.select(".slideshow")) # er dette nok?
+
     dictionary['poll'] = -9999
     dictionary['game'] = -9999
     
     # Jeg trenger litt hjelp til å finne gode eksempler på disse.
     # Send meg gjerne lenker!
+
     dictionary['interactive_elements'] = -9999 #dictionary['iframe']
 
     

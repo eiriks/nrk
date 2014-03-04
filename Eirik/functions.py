@@ -15,29 +15,25 @@ def get_video(soup, data, dictionary):
     #print ",".join(VIDEOS_TAGS)
     for t in VIDEOS_TAGS:
         if soup.find_all(t):
-            video_markup.append(soup.find_all(t))
- 
-        # ser ut som eksistensen av en data-video-id="118648" kan være en bedre indikator.. 
-    nrk_videoer = soup.select('figure.video')
-    print nrk_videoer
+            for vid in soup.find_all(t):
+                # youtube og vimeo kan avsløres ver src atributt til iframe tag
+                for prov in VIDEO_PROVIDERS:
+                    if prov in vid['src']:
+                        video_markup.append(vid)
 
+    #print video_markup 
+    print "antall videoer (ikke nrk): ", len(video_markup)
+
+    # nrk-videoer (lastet via js, og må trikses med)
+    # ser ut som eksistensen av en data-video-id="118648" kan være en bedre indikator.. 
+    nrk_videoer = soup.select('figure.video')
     print "antall nrk-videoer: ", len(nrk_videoer)
 
-    test = soup.find_all(",".join(VIDEOS_TAGS))
-    print test
-    videoTags = soup.find_all(",".join(VIDEOS_TAGS))
-    print videoTags
 
-    print video_markup
-
-    # Count videos (this seems to work):
-    # dictionary['video_files_nrk'] = len(re.findall('<div class="video-player">', data))
-    # # vimeo & others need to be included...
-    # dictionary['flash_file'] = len(re.findall('class="youtube-player"', data))
-    # # need to make this more complex...
-    # dictionary['video_files'] = dictionary['flash_file'] + dictionary['video_files_nrk']
-
+    dictionary['video_files'] = len(video_markup)
+    dictionary['video_files_nrk'] = len(nrk_videoer)
     return 
+
 
 def count_iframes(soup, data, dictionary):
     # Tell opp iframe. BeautifulSoup teller feil på "http://www.nrk.no/mr/enorm-nedgang-i-antall-filmbutikker-1.11261850", så vi bruker en regex her istedenfor.
@@ -56,14 +52,13 @@ def count_js(soup, data, dictionary):
     count+=len(a)
     # then external scripts
     for doc in soup.select("script[src]"):
-        if doc['src'].startswith("http"):
+        if doc['src'].startswith("http") or doc['src'].startswith("www"): # lurt med "or"?
             js_url = doc['src']
         else:
             ext = tldextract.extract(dictionary['url'])
             js_url = 'http://'+'.'.join(ext[:3])+doc['src']
         logger.info(js_url)
         r = requests.get(js_url)
-        #print r.text
         logger.debug( "lengde på eksternt js: %s", len(r.text) )
         count+=len(r.text)
         #print "count: ", count

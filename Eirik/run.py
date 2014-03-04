@@ -219,13 +219,17 @@ if __name__ == '__main__':
     #run_from_sqlite()
     #run_test_urlz()
     #
+    create_dictionary("http://www.nrk.no/ytring/handlekraftig-eller-handlingslamma_-1.11580300") # komentarer
+    #create_dictionary("http://www.nrk.no/viten/fra-harvard-til-verdensdominans-1.11509770")
+    #create_dictionary("http://www.nrk.no/livsstil/natur-i-fort-film-_-_timelapse_-1.6542463")
+    #create_dictionary("http://www.nrk.no/mr/moldes-uoffisielle-cupfinalesang-1.11372823")
     #create_dictionary("http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972") # youtube
-    create_dictionary("http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181") # mange NRK-videoer
+    #create_dictionary("http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181") # mange NRK-videoer
     # create_dictionary("http://www.nrk.no/kultur/tom-clancy-er-dod-1.11275817") # twitter 
     # create_dictionary("http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493") # faktaboks
     # create_dictionary("http://www.nrk.no/mat/1.11275477") # mat-template? 
-    # create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
-    # create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
+    #create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
+    #create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
     # create_dictionary("http://www.yr.no/nyheter/1.11274768") # yr-template, gammel?
     # create_dictionary("http://www.nrk.no/programmer/tv/melodi_grand_prix/1.11122386") # gammel template?
     # create_dictionary("http://p3.no/filmpolitiet/2013/10/gaten-ragnarok/") # p3-tamplate?
@@ -244,6 +248,8 @@ if __name__ == '__main__':
     # create_dictionary("http://www.nrk.no/hordaland/heftig-nordlys-pa-voss-i-natt-1.11276620") # youtube 
     # create_dictionary("http://www.nrk.no/fordypning/lydband-fra-studentersamfundet-1.11248706") # nrk-lydfiler
     # create_dictionary("http://www.nrk.no/viten/enno-hap-for-ison-1.11386243") # interaktiv grafikk 
+
+    #create_dictionary("http://www.nrk.no/magasin/_-som-a-sitte-i-et-fengsel-1.11570572") # snowfall style
 
 
 
