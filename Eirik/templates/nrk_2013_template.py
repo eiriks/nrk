@@ -6,7 +6,7 @@ from itertools import izip
 from Lix import Lix
 from datetime import datetime
 from fetch_disqus_comments import num_comments
-from functions import count_links, count_js, count_css, count_iframes, get_video
+from functions import count_links, count_js, count_css, count_iframes, get_video, get_flash
 from settings import *
 import logging
 
@@ -155,9 +155,7 @@ def get(soup, data, dictionary):
     # sets  dictionary['video_files'], dictionary['video_files_nrk'] 
     get_video(soup.body.article, data, dictionary)
 
-
-    dictionary['flash_file'] = -9999
-
+    dictionary['flash_file'] = get_flash(soup.body.article, data, dictionary)
 
     # Tell opp iframe. 
     dictionary['iframe'] = count_iframes(soup, data, dictionary)
@@ -171,7 +169,6 @@ def get(soup, data, dictionary):
     # Men vi søker generelt nå, og håper på det beste. I verste fall vil et interessant krasj fortelle meg at dette ikke er tilfellet. –Haakon
     dictionary['comment_fields'] = 0
     dictionary['comment_number'] = 0
-
     if len(re.findall('<div id="disqus_thread"', data)) != 0:
         dictionary['comment_fields'] = 1
         dictionary['comment_number'] = num_comments(dictionary)
@@ -198,6 +195,10 @@ def get(soup, data, dictionary):
     #print len(result)
     dictionary['images'] = len(re.findall("<img src=\"http:", data))
 
+    # på videoer gjør vi slik: soup.select('figure.video') Kanskje det er noe også her, (tror dette loades via js)
+
+    # bildesamlinger
+    dictionary['image_collection'] = len(soup.select(".slideshow")) # er dette nok?
 
     # Som diskutert med Eirik, dette henter ut bildetekstene og deler dem med pipe symboler.
     # Måtte den som kommer etterpå ikke himle så altfor mye med øynene når de ser dette... :o
@@ -211,22 +212,28 @@ def get(soup, data, dictionary):
     dictionary['image_captions'] = bildetekst
 
 
-
-
     # Dette er de data jeg ikke har fått til enda.
     # Dersom noen kan peke meg i retning av noen eksempler på sider med slike data på seg, blir jeg kjempeglad.
     # Jeg har sittet i flere timer på let, så jeg er litt frustrert over disse... ^_^
     dictionary['map'] = -9999
-
-    dictionary['image_collection'] = len(soup.select(".slideshow")) # er dette nok?
-
     dictionary['poll'] = -9999
     dictionary['game'] = -9999
+
+
+
     
     # Jeg trenger litt hjelp til å finne gode eksempler på disse.
     # Send meg gjerne lenker!
 
-    dictionary['interactive_elements'] = -9999 #dictionary['iframe']
+    # comment, map, game, image_collection
+    
+    dictionary['interactive_elements'] = dictionary['comment_fields'] + dictionary['image_collection'] + \
+                                            dictionary['video_files'] + dictionary['video_files_nrk'] + \
+                                            dictionary['fb_like'] + dictionary['fb_share'] + \
+                                            dictionary['googleplus_share'] + dictionary['twitter_share'] + \
+                                            dictionary['others_share'] + dictionary['email_share'] + \
+                                            dictionary['map'] + dictionary['poll'] + dictionary['game']
+
 
     
 

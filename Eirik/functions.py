@@ -9,6 +9,9 @@ import requests
 logger = logging.getLogger('nrk2013.nrk_new_tamplate')
 
 def get_video(soup, data, dictionary):
+    """ Sets two values, number of nrk-videos and number of other videoes.
+    total videoes is the sum of these
+    """
     video_markup = [] 
     VIDEOS_TAGS = ['iframe', 'embed', 'object', 'video']
     VIDEO_PROVIDERS = ['youtube', 'vimeo', 'dailymotion', 'kewego']
@@ -33,6 +36,10 @@ def get_video(soup, data, dictionary):
     dictionary['video_files'] = len(video_markup)
     dictionary['video_files_nrk'] = len(nrk_videoer)
     return 
+
+def get_flash(soup, data, dictionary):
+    '''Denne har ikke blitt testet, mangler eksempeldata'''
+    return len(soup.select('object'))
 
 
 def count_iframes(soup, data, dictionary):
