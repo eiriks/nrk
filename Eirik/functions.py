@@ -47,6 +47,23 @@ def count_iframes(soup, data, dictionary):
     # Hvis noen finner ut hvordan jeg bruker BS istedenfor, gi meg en lyd. (soup.find_all("iframe") hvirket ikke) – Haakon
     return len(re.findall("<iframe src=", data))
 
+def count_map(soup, data, dictionary):
+    """ !!! Trenger flere eksempler å jobbe med. 
+    Eksempel på nrk-intern løsning: http://www.nrk.no/sognogfjordane/navarsete-og-e16-i-laerdal-1.11457001
+    """
+    antall = 0
+    iframe = soup.select("iframe")
+    for frame in iframe:
+        if "kart" in frame['src']:
+            antall+=1
+
+    # test for http://www.nrk.no/nrksommer/kart/
+    # for div in soup.select("div['data-baseurl']"): # denne er ikke støttet av bs4...
+    #     print "HALLOYEN!!!!!!!!!!"
+    #     antall+=1
+
+    return antall
+
 def count_js(soup, data, dictionary):
     '''As js can be internal and external, a char count is perhaps a good indicator?'''
     count = 0

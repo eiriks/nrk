@@ -6,7 +6,7 @@ from itertools import izip
 from Lix import Lix
 from datetime import datetime
 from fetch_disqus_comments import num_comments
-from functions import count_links, count_js, count_css, count_iframes, get_video, get_flash
+from functions import count_links, count_js, count_css, count_iframes, get_video, get_flash, count_map
 from settings import *
 import logging
 
@@ -28,7 +28,18 @@ def get(soup, data, dictionary):
     dictionary['email_share']      = 1
     dictionary['related_stories']  = 6
 
+
+    # "les også" føljetong (sidebar) om om dette presise
+    # dette må gjøres før vi fjerner js (ser det ut til..)
+    relaterte = soup.select("aside.articlewidgets article") # a.autonomous ser ut til å gio riktig svar.. # article.brief
+    dictionary['related_stories_box_les']      = len(relaterte)     #-9999 
+
+    # "les mer" (i bunnen) om om generelt dette området.
+    # pga ulike typer saker (f.eks. live video) er kanskje select("container .brief") en løsning her?
+    dictionary['related_stories_box_thematic'] = -9999  
+
     # remove javascript.
+    # hvorfor fjerner vi js? Er det noen god grunn til det?
     # if we want to measure amount of js or numbers of .js docs, do it here.
     # antall js dokumenter
     dictionary['js'] = count_js(soup, data, dictionary) #  = len(re.findall("<iframe src=", data)) # .js
@@ -215,13 +226,13 @@ def get(soup, data, dictionary):
     # Dette er de data jeg ikke har fått til enda.
     # Dersom noen kan peke meg i retning av noen eksempler på sider med slike data på seg, blir jeg kjempeglad.
     # Jeg har sittet i flere timer på let, så jeg er litt frustrert over disse... ^_^
-    dictionary['map'] = -9999
+    
+    # !!! trenger flere eksempler på dett
+    dictionary['map'] = count_map(soup.body.article, data, dictionary)
     dictionary['poll'] = -9999
     dictionary['game'] = -9999
 
 
-
-    
     # Jeg trenger litt hjelp til å finne gode eksempler på disse.
     # Send meg gjerne lenker!
 
@@ -235,11 +246,8 @@ def get(soup, data, dictionary):
                                             dictionary['map'] + dictionary['poll'] + dictionary['game']
 
 
-    
 
-    # Disse rakk jeg rett og slett ikke å bli ferdig med.
-    # Beklager! ;_;
-    dictionary['related_stories_box_les']      = -9999
-    dictionary['related_stories_box_thematic'] = -9999
+
+
 
     return dictionary

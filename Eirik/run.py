@@ -219,7 +219,11 @@ if __name__ == '__main__':
     #run_from_sqlite()
     #run_test_urlz()
     #
-    create_dictionary("http://www.nrk.no/ytring/handlekraftig-eller-handlingslamma_-1.11580300") # komentarer
+    #create_dictionary("http://www.nrk.no/trondelag/brannsjefer-jubler-for-regn-1.11587449") # 6 relaterte.. 
+    create_dictionary("http://www.nrk.no/trondelag/kongeorna-hekker-for-lite-1.11587021") # relatert-test
+    #create_dictionary("http://www.nrk.no/nrksommer/kart/") # uklart template, uvanlig kartløsning
+    #create_dictionary("http://www.nrk.no/sognogfjordane/navarsete-og-e16-i-laerdal-1.11457001") # nrk-intern kartløsning
+    #create_dictionary("http://www.nrk.no/ytring/handlekraftig-eller-handlingslamma_-1.11580300") # komentarer
     #create_dictionary("http://www.nrk.no/viten/fra-harvard-til-verdensdominans-1.11509770")
     #create_dictionary("http://www.nrk.no/livsstil/natur-i-fort-film-_-_timelapse_-1.6542463")
     #create_dictionary("http://www.nrk.no/mr/moldes-uoffisielle-cupfinalesang-1.11372823")
