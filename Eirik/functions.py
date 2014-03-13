@@ -4,9 +4,16 @@ import re
 import tldextract
 import logging
 import requests
+import requests_cache
+from settings import *
 #from bs4 import BeautifulSoup
 
-logger = logging.getLogger('nrk2013.nrk_new_tamplate')
+requests_cache.install_cache('functions_cache', backend='sqlite') #, expire_after=300
+
+
+
+logger = logging.getLogger('nrk2013.functions')
+#logging.basicConfig(level=logging.ERROR) # http://excid3.com/blog/no-handlers-could-be-found-for-logger/
 
 def get_video(soup, data, dictionary):
     """ Sets two values, number of nrk-videos and number of other videoes.
@@ -20,17 +27,18 @@ def get_video(soup, data, dictionary):
         if soup.find_all(t):
             for vid in soup.find_all(t):
                 # youtube og vimeo kan avsløres ver src atributt til iframe tag
+                #print vid
                 for prov in VIDEO_PROVIDERS:
                     if prov in vid['src']:
                         video_markup.append(vid)
 
     #print video_markup 
-    print "antall videoer (ikke nrk): ", len(video_markup)
+    #print "antall videoer (ikke nrk): ", len(video_markup)
 
     # nrk-videoer (lastet via js, og må trikses med)
     # ser ut som eksistensen av en data-video-id="118648" kan være en bedre indikator.. 
     nrk_videoer = soup.select('figure.video')
-    print "antall nrk-videoer: ", len(nrk_videoer)
+    #print "antall nrk-videoer: ", len(nrk_videoer)
 
 
     dictionary['video_files'] = len(video_markup)
@@ -46,6 +54,25 @@ def count_iframes(soup, data, dictionary):
     # Tell opp iframe. BeautifulSoup teller feil på "http://www.nrk.no/mr/enorm-nedgang-i-antall-filmbutikker-1.11261850", så vi bruker en regex her istedenfor.
     # Hvis noen finner ut hvordan jeg bruker BS istedenfor, gi meg en lyd. (soup.find_all("iframe") hvirket ikke) – Haakon
     return len(re.findall("<iframe src=", data))
+
+
+def has_no_jsimg_class(css_class):
+    # true if not
+    # print css_class
+    # print css_class is not "js-img" and css_class is not None
+    return css_class is not "js-img" and css_class is not None
+
+def count_images(soup, data, dictionary):
+    # handle duplicate js-img tags
+    a = soup.find_all("img", class_=has_no_jsimg_class)
+    # print "*"*70
+    # print a
+    return len(a)
+#    return "antall img: ", len(soup.select("img"))
+
+
+
+
 
 def count_map(soup, data, dictionary):
     """ !!! Trenger flere eksempler å jobbe med. 
@@ -80,11 +107,20 @@ def count_js(soup, data, dictionary):
             js_url = doc['src']
         else:
             ext = tldextract.extract(dictionary['url'])
-            js_url = 'http://'+'.'.join(ext[:3])+doc['src']
+            #print ext, doc['src']
+            js_url = 'http://www'+'.'.join(ext[:3])+doc['src']
+        
+
         logger.info(js_url)
-        r = requests.get(js_url)
-        logger.debug( "lengde på eksternt js: %s", len(r.text) )
-        count+=len(r.text)
+        # keep running into requests.exceptions.InvalidURL error, so try:
+        #print js_url, type(js_url)
+        try:
+            r = requests.get(str(js_url))
+            #print "her", r.from_cache
+            logger.debug( "lengde på eksternt js: %s", len(r.text) )
+            count+=len(r.text)
+        except:
+            pass # just move along..
         #print "count: ", count
     return count        
 
@@ -101,9 +137,20 @@ def count_css(soup, data, dictionary):
         else:
             ext = tldextract.extract(dictionary['url'])
             css_url = 'http://'+'.'.join(ext[:3])+doc['href']
+        #print css_url
         r = requests.get(css_url)
+        #print r.from_cache
         count += len(r.text)
     return count
+
+
+
+
+def has_data_id(tag):
+    return tag.has_attr("data-id")
+
+def has_data_relation_limit(tag):
+    return tag.has_attr("data-relation-limit")
 
 def count_links(soup, data, dictionary):
 

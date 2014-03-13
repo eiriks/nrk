@@ -9,6 +9,7 @@ import time
 import logging
 import json
 
+logger = logging.getLogger('disqus')
 # by using Ghost I can get the url
 # http://disqus.com/embed/comments/?base=default&amp;disqus_version=b86e4cc3&amp;f=nrk-ytring&amp;t_i=1.11580300&amp;t_u=http%3A%2F%2Fwww.nrk.no%2Fytring%2Fhandlekraftig-eller-handlingslamma_-1.11580300&amp;t_d=Handlekraftig%20eller%20handlingslamma%3F&amp;t_t=Handlekraftig%20eller%20handlingslamma%3F&amp;s_o=default#2
 
@@ -26,34 +27,38 @@ def get_disqus_comments_by_ghost(dictionary):
     # comment loaded on scroll hack cred goes to Hammer et al. (2013)
     secs = 0.50
     time.sleep(secs)
-    ghost.evaluate("window.scroll(0, 200);")
+    ghost.evaluate("window.scroll(0, 700);")
     ghost.capture_to('scroll_before.png')       # do not get why this fails if i remove this image-capture function...
     time.sleep(secs)
-    ghost.evaluate("window.scroll(0, 300);")
+    ghost.evaluate("window.scroll(0, 1400);")
     time.sleep(secs)
-    ghost.evaluate("window.scroll(0, 500);")
+    ghost.evaluate("window.scroll(0, 2100);")
     time.sleep(secs)
-    ghost.evaluate("window.scroll(0, 1000);")
+    ghost.evaluate("window.scroll(0, 4000);")
     time.sleep(secs)
     ghost.wait_for_page_loaded()                #ghost.capture_to('scroll_after.png')
-    print "waiting for selector IFRAME"
+    logger.info("waiting for selector IFRAME")
     ghost.wait_for_selector("iframe") ##post-list
 
 #    print ghost.content
     soup = BeautifulSoup(ghost.content)
-    comments_iframe_url = soup.select("iframe#dsq-2")[0]['src'] # only one of these...
-    # headers = {
-    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:25.0) Gecko/20100101 Firefox/25.0',
-    #     'X-UA-Compatible': 'IE=edge'
-    # }
-    comments_html = requests.get(comments_iframe_url) # , headers=headers
-    #print comments_html.text
-    iframe_soup = BeautifulSoup(comments_html.text)
-    posts = iframe_soup.select("#disqus-threadData")
-    data = json.loads(posts[0].text)
-    
-    #print type(data)
-    return data['response']['thread']['posts']
+    try:
+        comments_iframe_url = soup.select("iframe#dsq-2")[0]['src'] # only one of these...
+        # headers = {
+        #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:25.0) Gecko/20100101 Firefox/25.0',
+        #     'X-UA-Compatible': 'IE=edge'
+        # }
+        comments_html = requests.get(comments_iframe_url) # , headers=headers
+        #print comments_html.text
+        iframe_soup = BeautifulSoup(comments_html.text)
+        posts = iframe_soup.select("#disqus-threadData")
+        data = json.loads(posts[0].text)
+        
+        #print type(data)
+        return data['response']['thread']['posts']
+    except:
+        # fetching comments failed
+        return -9999
 
 def get_disqus_comments(dictionary):
 	# http://disqus.com/embed/comments/?f=nrk-ytring&amp;t_i=1.11177825&amp;t_u=http%3A%2F%2Fwww.nrk.no%2Fytring%2Ffrihet-i-fellesskap-1.11177825&amp;t_d=Frihet%20i%20fellesskap&amp;t_t=Frihet%20i%20fellesskap&amp;s_o=default&amp;disqus_version=1381535643#2

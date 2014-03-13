@@ -18,7 +18,7 @@ def connect():
         connection = mysql.connector.connect(unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock",user=rdbms_username, passwd=rdbms_password, db="nrk", charset='utf8')
         cur = connection.cursor()
         cur.execute("USE nrk;")
-        connect_logger.info("koblet til MySQL")
+        connect_logger.debug("koblet til MySQL")
         return connection, cur
     except:
         connect_logger.error("kunne ikke logge på databasen")

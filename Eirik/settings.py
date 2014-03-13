@@ -1,5 +1,5 @@
 # coding: utf-8
-import re
+import re, logging
 #################################################################################
 # Instillinger for scraperen.                                                   #
 # Den absolutt enkleste måten å lagre instillinger på er å gjøre det som dette. #
@@ -16,6 +16,9 @@ language_identification_threshold = 0.40 #dvs, 40% sikker. Ganske lavt, men det 
 # Dersom vi ikke vet hva språk vi har, hvilken streng skal vi bruke til å identifisere med?
 uncertain_language_string = "NA"
 
+# set up logging
+# CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
+logger_level = logging.ERROR
 
 # Examples from nrk.no: (NTB), (©NTB), (NRK/Reuters), (NTB/Reuters), etc.
 syndicators = [
@@ -34,7 +37,7 @@ def matches_pattern(s, pats):
     pat = "|".join("(\(.?%s.?\w*\))" % p for p in pats)     # print pat
     mObj = re.search(pat, s, re.I)                          # print mObj.group()
     if bool(mObj):
-        print u"Nyhetabyrå: %s" % mObj.group()
+        #print u"Nyhetabyrå: %s" % mObj.group()
         return mObj.group()
     else: 
         return None

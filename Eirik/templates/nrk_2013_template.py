@@ -6,7 +6,7 @@ from itertools import izip
 from Lix import Lix
 from datetime import datetime
 from fetch_disqus_comments import num_comments
-from functions import count_links, count_js, count_css, count_iframes, get_video, get_flash, count_map
+from functions import * #count_links, count_js, count_css, count_iframes, get_video, get_flash, count_map, has_data_id, has_data_relation_limit
 from settings import *
 import logging
 
@@ -20,32 +20,39 @@ def get(soup, data, dictionary):
     Modifiserer dictionary argumentet du gir inn."""
 
     # Steg 1: Ting som alltid er sant:
-    dictionary['fb_like']          = 1
-    dictionary['fb_share']         = 1
-    dictionary['googleplus_share'] = 1
-    dictionary['twitter_share']    = 1
+    dictionary['fb_like']          = 0
     dictionary['others_share']     = 0
-    dictionary['email_share']      = 1
-    dictionary['related_stories']  = 6
-
+    dictionary['fb_share']         = len(soup.select(".share-facebook"))
+    dictionary['googleplus_share'] = len(soup.select(".share-googleplus"))
+    dictionary['twitter_share']    = len(soup.select(".share-twitter"))
+    dictionary['email_share']      = len(soup.select(".share-mail"))
+    
 
     # "les også" føljetong (sidebar) om om dette presise
     # dette må gjøres før vi fjerner js (ser det ut til..)
-    relaterte = soup.select("aside.articlewidgets article") # a.autonomous ser ut til å gio riktig svar.. # article.brief
-    dictionary['related_stories_box_les']      = len(relaterte)     #-9999 
+    # den første her ligger alltid inni .articlewrapper 
+    dictionary['related_stories_box_les'] = len(soup.select("aside.articlewidgets article"))     #-9999 
 
-    # "les mer" (i bunnen) om om generelt dette området.
-    # pga ulike typer saker (f.eks. live video) er kanskje select("container .brief") en løsning her?
-    dictionary['related_stories_box_thematic'] = -9999  
+    # related thematic (found in footer part of page)
+    dictionary['related_stories_box_thematic'] = 0
+    # grab that footer part with data-relation-limit attr
+    related_thematic = soup.find_all(has_data_relation_limit)
+    # loop
+    for el in related_thematic:
+        #check divs
+        for div in el.select("div"):
+            if has_data_id(div):
+                dictionary['related_stories_box_thematic'] +=1
 
-    # remove javascript.
-    # hvorfor fjerner vi js? Er det noen god grunn til det?
-    # if we want to measure amount of js or numbers of .js docs, do it here.
+    # re related stories is the combined previous two
+    dictionary['related_stories']  = dictionary['related_stories_box_les'] + dictionary['related_stories_box_thematic']
+    
+
     # antall js dokumenter
     dictionary['js'] = count_js(soup, data, dictionary) #  = len(re.findall("<iframe src=", data)) # .js
-
-    [s.decompose() for s in soup.body.article('script')]
+    # remove javascript. it is spread through the site like spots on a Dalmatian
     # I believe this is what creates the somewhat awkward line-breaks in the soup
+    [s.decompose() for s in soup.body.article('script')]
 
     # Find author(s)
     byline = soup.find('div', 'byline')
@@ -62,7 +69,7 @@ def get(soup, data, dictionary):
             address.figure.decompose()
     except AttributeError:
         # Finner ingen forfatter(e)
-        new_logger.error("fant ingen forfatter, oppgir ukjent")
+        new_logger.error("fant ingen forfatter, oppgir ukjent, url: %s", dictionary['url'])
         #print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
         authors.append([None, None, None])
     dictionary['authors'] = authors
@@ -104,7 +111,7 @@ def get(soup, data, dictionary):
 
 
     # Find full text 
-    # article MINUS .universes OR is it .lp_related ?
+    # article MINUS stuff..
     # remove the related section
     try:
         soup.body.article.find('section', 'lp_related').decompose()
@@ -149,32 +156,19 @@ def get(soup, data, dictionary):
 
     dictionary['language'] = language_code
 
-    # Finn ut av medieting de har. (Se lang kommentar)
-    '''
-    Så her er greien: Når vi laster ned via pythons requests, får vi ikke den "ferdige" nettsiden. Vi får rå html med javascript kall som evt. setter inn videoer.
-    Da kan vi ikke bare løpe gjennom den vakre suppen vår, men må istedenfor finne ut av hva NRK kaller for å få ut en ny videofil.
-    Heldigvis har NRK vært grusomt greie mot oss og ikke fjernet unødvendig whitespace fra javascriptkoden sin.
-    Og siden de som koder for NRK er flinke, er det lett å lese hva som gjør hva.
-    Da blir det enkelt å telle videoer og bilder.
-    Artig nok blir share-button tingene deres også laget derifra. For de nye sidene er dette statisk, så vi trenger ikke ta noe hensyn til hva som gjør hva, og vi slipper dermed å gjøre noe: Vet vi at det er en ny side, vet vi også hva som kan deles og hvordan. ^_^
-    Det store problemet jeg har er at Beautiful Soup ikke ser ut til å få med seg hele siden, alltid.
-    Se eksempelet http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181, beautiful soup tar ikke med hele siden.
-
-    – Haakon
-    '''
-    # only send the stuff in article-tag as soup
+    # video
     # sets  dictionary['video_files'], dictionary['video_files_nrk'] 
+    # only send the stuff in article-tag as soup
     get_video(soup.body.article, data, dictionary)
 
+    # flash (untested)
     dictionary['flash_file'] = get_flash(soup.body.article, data, dictionary)
 
     # Tell opp iframe. 
     dictionary['iframe'] = count_iframes(soup, data, dictionary)
     
-    # antall css dokumenter
+    # Tell opp css (karakterer)
     dictionary['css'] = count_css(soup, data, dictionary)
-
-
 
     # Finnes det en form for kommentarer her? I de nyere NRK sidene er det tydeligvis kun det på Ytring.
     # Men vi søker generelt nå, og håper på det beste. I verste fall vil et interessant krasj fortelle meg at dette ikke er tilfellet. –Haakon
@@ -182,7 +176,7 @@ def get(soup, data, dictionary):
     dictionary['comment_number'] = 0
     if len(re.findall('<div id="disqus_thread"', data)) != 0:
         dictionary['comment_fields'] = 1
-        dictionary['comment_number'] = num_comments(dictionary)
+        dictionary['comment_number'] = -9999#num_comments(dictionary)
     
     # tar seg av lenker i siden
     count_links(soup, data, dictionary)
@@ -204,7 +198,12 @@ def get(soup, data, dictionary):
     
     #result = soup.article.find_all('figure', 'image')
     #print len(result)
-    dictionary['images'] = len(re.findall("<img src=\"http:", data))
+    img_from_header = count_images(soup.body.article.header, data, dictionary)
+    img_from_article_text = count_images(soup.select(".articlebody")[0], data, dictionary)
+    dictionary['images'] = img_from_header+img_from_article_text # -9999# len(re.findall("<img src=\"http:", data))
+
+    #print "images: %s og %s og tilsammen: %s" % (img_from_header,img_from_article_text, img_from_header+img_from_article_text) 
+
 
     # på videoer gjør vi slik: soup.select('figure.video') Kanskje det er noe også her, (tror dette loades via js)
 
@@ -212,7 +211,6 @@ def get(soup, data, dictionary):
     dictionary['image_collection'] = len(soup.select(".slideshow")) # er dette nok?
 
     # Som diskutert med Eirik, dette henter ut bildetekstene og deler dem med pipe symboler.
-    # Måtte den som kommer etterpå ikke himle så altfor mye med øynene når de ser dette... :o
     imgtagger = re.findall(u"<img src=\"http.*\n.*", data)
     bildetekst = ""
     for imgtag in imgtagger:
@@ -222,30 +220,20 @@ def get(soup, data, dictionary):
     bildetekst = bildetekst[:-3] # Fjerner siste pipen
     dictionary['image_captions'] = bildetekst
 
-
-    # Dette er de data jeg ikke har fått til enda.
-    # Dersom noen kan peke meg i retning av noen eksempler på sider med slike data på seg, blir jeg kjempeglad.
-    # Jeg har sittet i flere timer på let, så jeg er litt frustrert over disse... ^_^
     
-    # !!! trenger flere eksempler på dett
+    # !!! trenger flere eksempler på dette
     dictionary['map'] = count_map(soup.body.article, data, dictionary)
-    dictionary['poll'] = -9999
-    dictionary['game'] = -9999
+    dictionary['poll'] = 0 #-9999
+    dictionary['game'] = 0 #-9999
 
 
-    # Jeg trenger litt hjelp til å finne gode eksempler på disse.
-    # Send meg gjerne lenker!
-
-    # comment, map, game, image_collection
-    
+    # sum interactive     
     dictionary['interactive_elements'] = dictionary['comment_fields'] + dictionary['image_collection'] + \
                                             dictionary['video_files'] + dictionary['video_files_nrk'] + \
                                             dictionary['fb_like'] + dictionary['fb_share'] + \
                                             dictionary['googleplus_share'] + dictionary['twitter_share'] + \
                                             dictionary['others_share'] + dictionary['email_share'] + \
                                             dictionary['map'] + dictionary['poll'] + dictionary['game']
-
-
 
 
 

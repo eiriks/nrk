@@ -4,6 +4,7 @@
 
 Eirik/*.db
 # skip this..
+Eirik/patch_readline_issue_18458.sh
 Eirik/backup_nrk2013_13des.sql 
 backup_nrk2013_13des.sql
 *.png

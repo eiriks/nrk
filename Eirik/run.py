@@ -1,54 +1,67 @@
 #!/usr/bin/python2.7
 # coding: utf-8
 
-
 import urllib2
 from bs4 import BeautifulSoup
 import datetime 
 import requests  # requests.readthedocs.org 
+import re, sys
+import sqlite3 as lite
+import logging
+from rainbow_logging_handler import RainbowLoggingHandler
+
+from settings import *
 from templates import nrk_2013_template, nrk_alfa_template
 from rdbms_insertion import add_to_db
 from analyze_url import analyze_url
-import re, sys
-import sqlite3 as lite
-
 from connect_mysql import connect
 
-# set up logging
-# CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
 
-import logging
-from rainbow_logging_handler import RainbowLoggingHandler
-# create logger with 'tldextract'
-logger = logging.getLogger('nrk2013')
-logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fh = logging.FileHandler('spam.log')
-fh.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-#ch = logging.StreamHandler()
-#ch.setLevel(logging.DEBUG) # logging.ERROR # til skjerm, antagelig vis.
-rainbow_handler = RainbowLoggingHandler(sys.stderr, color_funcName=('black', 'yellow', True))
-rainbow_handler.setLevel(logging.DEBUG)
+# set up verbose option..
+import argparse # http://docs.python.org/2/howto/argparse.html
+parser = argparse.ArgumentParser()
+parser.add_argument("-v", "--verbose", help="increase output verbosity, takes CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET as arguments",
+                     nargs=1) # action="store_true",
+args = parser.parse_args()
 
-# create formatter and add it to the handlers
-# logging.Formatter() '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+if args.verbose[0] == "ERROR":
+    log_level = logging.ERROR
+elif args.verbose[0] == "WARNING":
+    log_level = logging.WARNING
+elif args.verbose[0] == "INFO":
+    log_level = logging.INFO
+elif args.verbose[0] == "DEBUG":        
+    log_level = logging.DEBUG
+elif args.verbose[0] == "NOTSET":
+    log_level = logging.NOTSET
+else: # aka default - just the crazy stuff
+    log_level = logging.CRITICAL    
+
+
+# set up logging to file 
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(asctime)s] %(name)s %(funcName)s():%(lineno)d\t%(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='spam.log',
+                    filemode='w')
+
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = RainbowLoggingHandler(sys.stdout) #logging.StreamHandler() 
+# handler = RainbowLoggingHandler(sys.stdout)
+
+# get level from command input
+console.setLevel(log_level)
+
 formatter = logging.Formatter("[%(asctime)s] %(name)s %(funcName)s():%(lineno)d\t%(message)s")
-
-#
-
-
-#rainbow_handler.setLevel(logging.DEBUG)
-
-
-fh.setFormatter(formatter)
-#ch.setFormatter(formatter)
-rainbow_handler.setFormatter(formatter)
-
-# add the handlers to the logger
-logger.addHandler(rainbow_handler)
-logger.addHandler(fh)
-#logger.addHandler(ch)
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+logger = logging.getLogger('nrk2013')
+# tell requests lib to chill out
+requests_log = logging.getLogger("requests")
+requests_log.setLevel(logging.WARNING)
 
 
 # Dette skulle hjelpe?
@@ -56,79 +69,105 @@ logger.addHandler(fh)
 request = False
 
 ### Hjelpefunksjoner
-def soup_from_url(url):
-    """Tar en URL og returnerer et BeautifulSoup objekt
-       Nå som vi er under utvikling returnerer vi en suppe basert på en html-fil vi allerede har lagret."""
-    try:
-        request  = requests.get(url)
-        data = request.text
-        #request.close() # Forhåpentligvis fikser dette problemet med at vi har for mange filer oppe
-    except requests.exceptions.TooManyRedirects: # Dette skjedde på noen radiokanaler eller noe.
-        print "{} has does not evaluate properly, and we will infinitely redirect".format(url)
-        logger.error("Could'n get the url from server")
-        return False
-    #data = open("testhtml/ny.template.html", "r").read() # Dette er bare nå som vi tester for NRK ny.
-    bs = BeautifulSoup(data)
-    return [bs, data]
-
-# def soup_from_live_url(url):
-#     soup = BeautifulSoup(urllib2.urlopen(url).read())
-#     return soup
 
 def dispatch_on_template(soup, data, dictionary):
-    # en kjapp hack: Det nye templatet bruker html5, den gamle bruker xhtml, så vi sjekker bare hvilken det er snakk om.
+    """figure out how to analyse.."""
+
+    # if nrk.no/video/ in url:
+    #   video_arsenal_tamplate
+
     # Vi vet også at den nye har en adresse til seg selv nederst, i motsetning til de gamle.
-    if re.match("<!doctype html>", data) and len(re.findall('<input type="text" value=".*" readonly="readonly"', data)) == 1:
+    if re.match("<!doctype html>", data) and soup.select("html.food"):
+        dictionary['template'] = 'food'
+        logger.error("template: %s %s" % (dictionary['template'], dictionary['url']) ) 
+        #return nrk_2013_food.get(soup, data, dictionary)    
+        print('\a')
+        return False
+    if soup.select('html.magazine'):
+        dictionary['template'] = 'magazine'
+        logger.error("template: %s %s" % (dictionary['template'], dictionary['url']) ) 
+        print('\a')
+        return False
+    elif re.match("<!doctype html>", data) and len(re.findall('<input type="text" value=".*" readonly="readonly"', data)) == 1:
         dictionary['template'] = 'ny2013'
         #logger.info("template: %s", dictionary['template'] ) 
         return nrk_2013_template.get(soup, data, dictionary)
     elif re.match('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', data):
         dictionary['template'] = 'gammel2013'
         #logger.info("template: %s", dictionary['template'] ) 
-        print "GAMMELT TEMPLATE, IKKE STØTTET ENDA."
+        logger.error("GAMMELT TEMPLATE, IKKE STØTTET ENDA, gammel2013")
+        print('\a')
         return False
     elif re.match("<!doctype html>", data) and len(soup.select("article.teaser")) == 1:
         dictionary['template'] = 'nrk_alfa'
         #logger.warn("template: %s url = %s" % (dictionary['template'],dictionary['url']))
         return nrk_alfa_template.get(soup, data, dictionary) 
     else:
+        print('\a')
         dictionary['template'] = 'ukjent'
-        logger.info("template: Uvisst hvilken template, vi hopper over denne.") 
+        logger.error("template: Uvisst hvilken template, vi hopper over denne: %s", dictionary['url']) 
         #print "Uvisst hvilken template, vi hopper over denne."
-        print soup.select("article.teaser"), len(soup.select("article.teaser"))
-        print dictionary
+        # print soup.select("article.teaser"), len(soup.select("article.teaser"))
+        # print dictionary
         return False
     
     # tror at article.teaser er indikasjon på "alfa"-template
 
+def this_url_looks_fine(url):
+    '''remove urls that clearly and systematically are wrong to analyze'''
+    no_go_suffixes = ['css', 'js', 'zip', 'tar', 'gz', 'tgz', 'jpg', 'jpeg']
+
+    if 'facebook.com/sharer.php?' in url:
+        return False
+    elif 'twitter.com/intent/tweet?original_referer' in url:
+        return False
+    elif url.split(".")[-1].lower() in no_go_suffixes:
+        #print "failed by suffix", url
+        return False
+    else:
+        return True
 
 
-### Hovedfunksjoner
 
 ## Entry points
 def create_dictionary(url):
-    logger.info("prover med url: %s \n", url)          
-    dictionary = {'url':url, 'timestamp':datetime.datetime.now()}     # Oppretter første dictionary, med url og datetime for når vi laster ned.
-    dictionary = analyze_url(dictionary)                              # Analyserer URL med hensyn på ting vi ville ha med.
-    souplist = soup_from_url(url)
-    if souplist == False: # If something went horribly wrong, we just return
-        return
-    soup = souplist[0]
-    data = souplist[1]
-    dictionary = dispatch_on_template(soup, data, dictionary)         # Henter ut data som må hentes ut spesifikt fra hver side.
-    if(dictionary != False):
-        add_to_db(dictionary)                                         # Hiver hele herligheten inn i databasen vår.
-        return dictionary                                             # Returnerer det vi har laget i tilfelle det skulle være interessant. (til dømes, dersom et annet program skulle kalle denne funksjonen)
-    else:
-        return False
+
+    # a screener to remove abviously erronious urlz
+    if this_url_looks_fine(url):
+        #
+
+        request  = requests.get(url)
+        #print request.status_code
+        if request.status_code == 404:
+            #logger.warning("404 not foud: %s", url) 
+            return # aka break out if this
 
 
-def run_from_sqlite():
+        # url looks fine and no 404, ok then we run..!
+        # OK! Let's go.
+        logger.warning("\n prover med url: %s", url) 
+
+        data = request.text
+        soup = BeautifulSoup(data)
+
+        dictionary = {'url':url, 'timestamp':datetime.datetime.now()}     # Oppretter første dictionary, med url og datetime for når vi laster ned.
+        dictionary = analyze_url(dictionary)                              # Analyserer URL med hensyn på ting vi ville ha med.
+
+
+        dictionary = dispatch_on_template(soup, data, dictionary)         # Henter ut data som må hentes ut spesifikt fra hver side.
+        if(dictionary != False):
+            add_to_db(dictionary)                                         # Hiver hele herligheten inn i databasen vår.
+            return dictionary                                             # Returnerer det vi har laget i tilfelle det skulle være interessant. (til dømes, dersom et annet program skulle kalle denne funksjonen)
+        else:
+            return False
+
+
+def run_from_sqlite(start=0,antall=10):
     con = None
     try:
         lite_con = lite.connect('nrk2013.db')    
         lite_cur = lite_con.cursor()    
-        lite_sql = 'SELECT * FROM links ORDER BY date DESC LIMIT 10'
+        lite_sql = 'SELECT * FROM links ORDER BY date DESC LIMIT %s,%s' % (start,antall)
         lite_cur.execute(lite_sql) # 'SELECT SQLITE_VERSION()'        
         rows = lite_cur.fetchall()   #fetchone()
 
@@ -216,24 +255,26 @@ test_urlz = [   'http://www.nrk.no/verden/opp-mot-80-batflyktninger-druknet-1.11
 
 
 if __name__ == '__main__':
-    #run_from_sqlite()
+    #create_dictionary("http://www.nrk.no/nyheter/1.11415996")
+    run_from_sqlite(start=500,antall=200)
     #run_test_urlz()
     #
-    #create_dictionary("http://www.nrk.no/trondelag/brannsjefer-jubler-for-regn-1.11587449") # 6 relaterte.. 
-    create_dictionary("http://www.nrk.no/trondelag/kongeorna-hekker-for-lite-1.11587021") # relatert-test
-    #create_dictionary("http://www.nrk.no/nrksommer/kart/") # uklart template, uvanlig kartløsning
-    #create_dictionary("http://www.nrk.no/sognogfjordane/navarsete-og-e16-i-laerdal-1.11457001") # nrk-intern kartløsning
-    #create_dictionary("http://www.nrk.no/ytring/handlekraftig-eller-handlingslamma_-1.11580300") # komentarer
-    #create_dictionary("http://www.nrk.no/viten/fra-harvard-til-verdensdominans-1.11509770")
-    #create_dictionary("http://www.nrk.no/livsstil/natur-i-fort-film-_-_timelapse_-1.6542463")
-    #create_dictionary("http://www.nrk.no/mr/moldes-uoffisielle-cupfinalesang-1.11372823")
-    #create_dictionary("http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972") # youtube
-    #create_dictionary("http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181") # mange NRK-videoer
+    # create_dictionary("http://www.nrk.no/trondelag/brannsjefer-jubler-for-regn-1.11587449") # 6 relaterte.. 
+    # create_dictionary("http://www.nrk.no/finnmarkslopet/_nrkbjeff-1.11559994")
+    # create_dictionary("http://www.nrk.no/trondelag/kongeorna-hekker-for-lite-1.11587021") # relatert-test
+    # create_dictionary("http://www.nrk.no/nrksommer/kart/") # uklart template, uvanlig kartløsning
+    # create_dictionary("http://www.nrk.no/sognogfjordane/navarsete-og-e16-i-laerdal-1.11457001") # nrk-intern kartløsning
+    # create_dictionary("http://www.nrk.no/ytring/handlekraftig-eller-handlingslamma_-1.11580300") # komentarer
+    # create_dictionary("http://www.nrk.no/viten/fra-harvard-til-verdensdominans-1.11509770")
+    # create_dictionary("http://www.nrk.no/livsstil/natur-i-fort-film-_-_timelapse_-1.6542463")
+    # create_dictionary("http://www.nrk.no/mr/moldes-uoffisielle-cupfinalesang-1.11372823")
+    # create_dictionary("http://www.nrk.no/sport/her-scorer-han-en-utrolig-touchdown-1.11389972") # youtube
+    # create_dictionary("http://www.nrk.no/valg2013/se-partiledernes-foredrag-1.11168181") # mange NRK-videoer
     # create_dictionary("http://www.nrk.no/kultur/tom-clancy-er-dod-1.11275817") # twitter 
     # create_dictionary("http://www.nrk.no/ostlandssendingen/_-jeg-sa-nei-og-stopp-flere-ganger-1.11311493") # faktaboks
     # create_dictionary("http://www.nrk.no/mat/1.11275477") # mat-template? 
-    #create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
-    #create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
+    # create_dictionary("http://www.nrk.no/nordnytt/oppsiktsvekkende-blomsterfunn-1.11276684") # bildegalleri + bilder
+    # create_dictionary("http://www.nrk.no/livsstil/norske-sjofugler-dor-ut-1.6952526") # bildegalleri og videoer 
     # create_dictionary("http://www.yr.no/nyheter/1.11274768") # yr-template, gammel?
     # create_dictionary("http://www.nrk.no/programmer/tv/melodi_grand_prix/1.11122386") # gammel template?
     # create_dictionary("http://p3.no/filmpolitiet/2013/10/gaten-ragnarok/") # p3-tamplate?
@@ -252,8 +293,7 @@ if __name__ == '__main__':
     # create_dictionary("http://www.nrk.no/hordaland/heftig-nordlys-pa-voss-i-natt-1.11276620") # youtube 
     # create_dictionary("http://www.nrk.no/fordypning/lydband-fra-studentersamfundet-1.11248706") # nrk-lydfiler
     # create_dictionary("http://www.nrk.no/viten/enno-hap-for-ison-1.11386243") # interaktiv grafikk 
-
-    #create_dictionary("http://www.nrk.no/magasin/_-som-a-sitte-i-et-fengsel-1.11570572") # snowfall style
+    # create_dictionary("http://www.nrk.no/magasin/_-som-a-sitte-i-et-fengsel-1.11570572") # snowfall style
 
 
 
