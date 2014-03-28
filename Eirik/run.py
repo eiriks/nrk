@@ -1,12 +1,18 @@
 #!/usr/bin/python2.7
 # coding: utf-8
 
+### To potenstielle resurser her: 
+# https://github.com/codelucas/newspaper
+# https://github.com/grangier/python-goose
+
+
 import urllib2
 from bs4 import BeautifulSoup
 import datetime 
 import requests  # requests.readthedocs.org 
 import re, sys
 import sqlite3 as lite
+from time import sleep
 import logging
 from rainbow_logging_handler import RainbowLoggingHandler
 
@@ -128,23 +134,22 @@ def this_url_looks_fine(url):
         return True
 
 
+# def return_status(input):
+#     print "function my_callback was called with %s input" % (input,)
 
-## Entry points
-def create_dictionary(url):
+
+def create_dictionary(url): # , func=return_status
+    """ Returns the status of this procedure """
 
     # a screener to remove abviously erronious urlz
     if this_url_looks_fine(url):
-        #
 
         request  = requests.get(url)
         #print request.status_code
         if request.status_code == 404:
             #logger.warning("404 not foud: %s", url) 
-            return # aka break out if this
-
-
-        # url looks fine and no 404, ok then we run..!
-        # OK! Let's go.
+            return 'url_404' # aka break out if this
+        # url looks fine and no 404, ok then we run..! OK! Let's go.
         logger.warning("\n prover med url: %s", url) 
 
         data = request.text
@@ -157,17 +162,29 @@ def create_dictionary(url):
         dictionary = dispatch_on_template(soup, data, dictionary)         # Henter ut data som må hentes ut spesifikt fra hver side.
         if(dictionary != False):
             add_to_db(dictionary)                                         # Hiver hele herligheten inn i databasen vår.
-            return dictionary                                             # Returnerer det vi har laget i tilfelle det skulle være interessant. (til dømes, dersom et annet program skulle kalle denne funksjonen)
+            dictionary['status'] = 'scraped'
+            return dictionary['status']                                             # Returnerer det vi har laget i tilfelle det skulle være interessant. (til dømes, dersom et annet program skulle kalle denne funksjonen)
         else:
-            return False
+            return 'template_not_supported'#False
+    else:
+        return 'url_not_fine'
+
+    # print "Status: %s" % dictionary['status']
+    # return dictionary['status']
 
 
-def run_from_sqlite(start=0,antall=10):
+def run_from_sqlite(start=0,antall=5):
+    """ 
+    Now this function only targets the links sqlite3 db that have status NULL
+    start parameter should then always be 0
+    """ 
     con = None
     try:
-        lite_con = lite.connect('nrk2013.db')    
+        lite_con = lite.connect('nrk2013_2.db')    
         lite_cur = lite_con.cursor()    
-        lite_sql = 'SELECT * FROM links ORDER BY date DESC LIMIT %s,%s' % (start,antall)
+        # fetch links that do not have a status yet
+        lite_sql = 'SELECT * FROM links WHERE status is NULL ORDER BY date DESC LIMIT %s,%s' % (start,antall)
+        #print lite_sql
         lite_cur.execute(lite_sql) # 'SELECT SQLITE_VERSION()'        
         rows = lite_cur.fetchall()   #fetchone()
 
@@ -176,19 +193,38 @@ def run_from_sqlite(start=0,antall=10):
 
         # loop through SQLite set
         for row in rows:
-            #print row[0], row[1], row[2] # 1 er url, 2 er tidspunkt for innsamling 
+            #print row[0], row[1], row[2], row[3] # 1 er url, 2 er tidspunkt for innsamling 
             # check if url is in mysql as url or url_self_link (either is fine)
-            query = "SELECT * FROM page WHERE url = '%s' OR url_self_link = '%s'" % (row[1], row[1])
-            cur.execute(query)
-            rows = cur.fetchall()
-            #print len(rows), row[1] # 1 full url hvis finnes i mysql
-            if not len(rows):
-                logger.info( "finnes, ikke, må settes inn" )
-                create_dictionary(row[1])
-    
-                # hvis ikke, finn ut hvilken tamplate som er i bruk
+            # rewrite to only check for primary url (not self_utl)
+            mysql_query = "SELECT * FROM page WHERE url = '%s' " % (row[1]) # OR url_self_link = '%s'
+            cur.execute(mysql_query)
+            mysql_rows = cur.fetchall()
+            #print len(mysql_rows), row[1]
+            if len(mysql_rows) == 0: # hvis 0 -> sett inn 
+                logger.info( "finnes, ikke, må settes inn: %s" % (row[1].encode('utf8')) )
+                #print row[1]
 
-        # scrape & lagre i mysql
+                sleep(scraping_request_stagger) # found in settings
+                status = create_dictionary(row[1])
+                # I aleardy DO commit in rdbms_insertion.py 
+                # does this help?
+                connection.commit()
+
+                # updata sqlite3 with status 
+                logger.info( "status: %s" %  status )
+
+                lite_cur.execute("UPDATE links SET status=? WHERE page=? AND link=?", (status, row[0], row[1]))
+                lite_con.commit()
+            else:
+                # does exist in mysql, but has status NULL in .db 
+                # update row in .db 
+                lite_cur.execute("UPDATE links SET status=? WHERE page=? AND link=?", ("scraped", row[0], row[1]))
+                lite_con.commit()
+                logger.info( "fantes allarede i mysql, oppdaterer sqlite3: %s" % (row[1]) )
+
+        lite_con.close()    # close sqlite3
+        connection.close()  # close mysql
+
 
         
     except lite.Error, e:
@@ -197,6 +233,10 @@ def run_from_sqlite(start=0,antall=10):
     finally:
         if con:
             con.close()
+
+
+
+
 
 
 def run_test_urlz():
@@ -255,10 +295,12 @@ test_urlz = [   'http://www.nrk.no/verden/opp-mot-80-batflyktninger-druknet-1.11
 
 
 if __name__ == '__main__':
-    #create_dictionary("http://www.nrk.no/nyheter/1.11415996")
-    run_from_sqlite(start=500,antall=200)
+
+    #run_from_sqlite()
+    run_from_sqlite(start=0,antall=500) # start=0 if we do not want to skipp any 
     #run_test_urlz()
     #
+    # create_dictionary("http://www.nrk.no/nyheter/1.11415996")
     # create_dictionary("http://www.nrk.no/trondelag/brannsjefer-jubler-for-regn-1.11587449") # 6 relaterte.. 
     # create_dictionary("http://www.nrk.no/finnmarkslopet/_nrkbjeff-1.11559994")
     # create_dictionary("http://www.nrk.no/trondelag/kongeorna-hekker-for-lite-1.11587021") # relatert-test

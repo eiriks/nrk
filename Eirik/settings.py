@@ -13,6 +13,8 @@ import re, logging
 # Hvor sikker i prosent må vi være på at et språk er det det utgir seg for å være før vi akspeterer svaret, fra 0.0 til 1.0, hvor 1.0 er 100% sikker
 language_identification_threshold = 0.40 #dvs, 40% sikker. Ganske lavt, men det funker for nå.
 
+scraping_request_stagger =  0.45 # 1100 # 1100 i sekunder, aka 1.1 sec
+
 # Dersom vi ikke vet hva språk vi har, hvilken streng skal vi bruke til å identifisere med?
 uncertain_language_string = "NA"
 

@@ -108,10 +108,13 @@ def count_js(soup, data, dictionary):
         else:
             ext = tldextract.extract(dictionary['url'])
             #print ext, doc['src']
-            js_url = 'http://www'+'.'.join(ext[:3])+doc['src']
-        
-
-        logger.info(js_url)
+            # this next line must be wrong...
+            # probably need an if/else to sort out urls with no subdomain
+            if (not ext.subdomain):
+                js_url = 'http://www'+'.'.join(ext[:3])+doc['src']
+            else:
+                js_url = 'http://'+'.'.join(ext[:3])+doc['src']
+        #logger.info(js_url)
         # keep running into requests.exceptions.InvalidURL error, so try:
         #print js_url, type(js_url)
         try:
@@ -124,7 +127,6 @@ def count_js(soup, data, dictionary):
         #print "count: ", count
     return count        
 
-
 def count_css(soup, data, dictionary):
     count = 0
     # add internal css
@@ -132,11 +134,20 @@ def count_css(soup, data, dictionary):
     logger.debug( "antall css-karakterer %s", count )
     # then external 
     for doc in soup.select("link[rel^stylesheet]"):
-        if doc['href'].startswith("http"):
+        #print doc
+        #print doc['href']
+        if doc['href'].startswith("http") or doc['href'].startswith("www"):
+            # then is good.
             css_url = doc['href']
         else:
+            # we need to re build it.
             ext = tldextract.extract(dictionary['url'])
-            css_url = 'http://'+'.'.join(ext[:3])+doc['href']
+            #print ext
+            # probably need an if/else to sort out urls without subdomains..
+            if (not ext.subdomain):
+                css_url = 'http://www'+'.'.join(ext[:3])+doc['href']
+            else:
+                css_url = 'http://'+'.'.join(ext[:3])+doc['href']
         #print css_url
         r = requests.get(css_url)
         #print r.from_cache
@@ -190,3 +201,8 @@ def count_links(soup, data, dictionary):
     dictionary['external_links'] = eksterne_lenker
     dictionary['internal_links'] = interne_lenker
     return
+
+def count_interactive(*args):
+    """ excepts args to be summable or None. Uses filter to skip None's """
+    #print args 
+    return sum(filter(None, args))

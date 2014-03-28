@@ -181,7 +181,7 @@ def get(soup, data, dictionary):
     dictionary['comment_number'] = 0
     if len(re.findall('<div id="disqus_thread"', data)) != 0:
         dictionary['comment_fields'] = 1
-        dictionary['comment_number'] = -9999#num_comments(dictionary)
+        dictionary['comment_number'] = None # -9999#num_comments(dictionary)
     
     # tar seg av lenker i siden
     count_links(soup, data, dictionary)
@@ -211,15 +211,16 @@ def get(soup, data, dictionary):
 
 
     dictionary['map'] = count_map(soup.body.article, data, dictionary)
-    dictionary['poll'] = -9999
-    dictionary['game'] = -9999
+    dictionary['poll'] = None # -9999
+    dictionary['game'] = None # -9999
     
-    dictionary['interactive_elements'] = dictionary['comment_fields'] + dictionary['image_collection'] + \
-                                            dictionary['video_files'] + dictionary['video_files_nrk'] + \
-                                            dictionary['fb_like'] + dictionary['fb_share'] + \
-                                            dictionary['googleplus_share'] + dictionary['twitter_share'] + \
-                                            dictionary['others_share'] + dictionary['email_share'] + \
-                                            dictionary['map'] + dictionary['poll'] + dictionary['game']
+    dictionary['interactive_elements'] = count_interactive( \
+                                            dictionary['comment_fields'] , dictionary['image_collection'] , \
+                                            dictionary['video_files'] , dictionary['video_files_nrk'] , \
+                                            dictionary['fb_like'] , dictionary['fb_share'] , \
+                                            dictionary['googleplus_share'] , dictionary['twitter_share'] , \
+                                            dictionary['others_share'] , dictionary['email_share'] , \
+                                            dictionary['map'] , dictionary['poll'] , dictionary['game'])
     
 
 

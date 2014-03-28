@@ -67,16 +67,26 @@ def add_to_db(dict):
             authorRole = authorRole
         else:
             authorRole = None
-            
-        cur.execute(insertion_author,
-                    (dict['url_self_link'],
-                     authorName,
-                     authorMail,
-                     authorRole))
+
+        # if all three are not None
+        if not ((authorName is None) & (authorMail is None) & (authorRole is None)):
+            #print authorName, authorMail, authorRole
+            # insert
+            cur.execute(insertion_author,
+                        (dict['url'], # dict['url_self_link']
+                         authorName,
+                         authorMail,
+                         authorRole))
+            # import sys
+            # sys.exit(0)
+        # else: 
+        #     print authorName, authorMail,authorRole
+
+
                     
     for box in dict['factbox']:
         cur.execute(insertion_factbox,
-                    (dict['url_self_link'],
+                    (dict['url'], # dict['url_self_link']
                      len(box['links']),
                      box['wordcount'],
                      box['text'].encode('utf-8')))
@@ -85,7 +95,7 @@ def add_to_db(dict):
     for link in dict['internal_links']:
         extr = tldextract.extract(link)
         cur.execute(insertion_link.encode('utf-8'),
-                    (dict['url_self_link'].encode('utf-8'),
+                    (dict['url'].encode('utf-8'), # dict['url_self_link']
                      link.encode('utf-8'),
                      u"html",
                      extr[0].encode('utf-8'),
@@ -96,7 +106,7 @@ def add_to_db(dict):
     for link in dict['external_links']:
         extr = tldextract.extract(link)
         cur.execute(insertion_link.encode('utf-8'),
-                    (dict['url_self_link'].encode('utf-8'),
+                    (dict['url'].encode('utf-8'), # url_self_link
                     link.encode('utf-8'),
                     u"html",
                     extr[0].encode('utf-8'),

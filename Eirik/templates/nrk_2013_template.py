@@ -20,7 +20,7 @@ def get(soup, data, dictionary):
     Modifiserer dictionary argumentet du gir inn."""
 
     # Steg 1: Ting som alltid er sant:
-    dictionary['fb_like']          = 0
+    dictionary['fb_like']          = 0 #len(soup.select(".pluginButtonLabel"))
     dictionary['others_share']     = 0
     dictionary['fb_share']         = len(soup.select(".share-facebook"))
     dictionary['googleplus_share'] = len(soup.select(".share-googleplus"))
@@ -58,21 +58,49 @@ def get(soup, data, dictionary):
     byline = soup.find('div', 'byline')
     authors = []
     try:
-        for address, li in izip(byline.find_all('address'), byline.find_all('li', 'icon-email')):
-            authorName = address.strong.text #address.find(class_='fn').string.encode('utf-8')
-            # NRK is still trying to hide the email address from spammers. #href = li.a['href']
-            authorMail = None # 'abandon this? too hard?'#unquote(href[21:-1])[7:] # Antakelsen er at epost vil holde seg til ASCII. 
-            authorRole = address.span.text #address.find(class_='role').string.strip().encode('utf-8')
+        for address in byline.find_all('address'):
+
+            authorName = address.find('a', 'fn').text # alternatively .find('a', 'email') #address.a.text 
+            authorMail = None # midlertidig gitt opp
+
+            # not all have a span role
+            if (address.find('span', 'role')):
+                authorRole = address.find('span', 'role').text #address.span.text
+            else:
+                authorRole = None
+
             author = [authorName, authorMail, authorRole]
             authors.append(author)
-            # and remove author image (so not to count it later..) 
-            address.figure.decompose()
-    except AttributeError:
-        # Finner ingen forfatter(e)
-        new_logger.error("fant ingen forfatter, oppgir ukjent, url: %s", dictionary['url'])
-        #print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
-        authors.append([None, None, None])
+            # address does not always come with figure, if it does, decompose
+            # check http://www.nrk.no/ho/nekter-for-at-hun-var-med-pa-ran-1.11415954
+            if (address.figure):
+                address.figure.decompose() # remove tag cos it contains imgs we do not want to count later.
+    except:
+        new_logger.info("Ingen forfatter, oppgir ukjent, url: %s", dictionary['url'])
+        authors.append([None, None, None]) # this is not very slick..
+
     dictionary['authors'] = authors
+    #print dictionary['authors']
+
+
+    # # dette failer
+    # try:
+    #     for address, li in izip(byline.find_all('address'), byline.find_all('li', 'icon-email')):
+    #         authorName = address.strong.text #address.find(class_='fn').string.encode('utf-8')
+    #         # NRK is still trying to hide the email address from spammers. #href = li.a['href']
+    #         authorMail = None # 'abandon this? too hard?'#unquote(href[21:-1])[7:] # Antakelsen er at epost vil holde seg til ASCII. 
+    #         authorRole = address.span.text #address.find(class_='role').string.strip().encode('utf-8')
+    #         author = [authorName, authorMail, authorRole]
+    #         authors.append(author)
+
+    #         # and remove author image (so not to count it later..) 
+    #         address.figure.decompose()
+    # except AttributeError:
+    #     # Finner ingen forfatter(e)
+    #     new_logger.error("fant ingen forfatter, oppgir ukjent, url: %s", dictionary['url'])
+    #     #print "[ERROR]: Kunne ikke finne forfattere for artikkel \"{0}\". Oppgir \"<UKJENT>\" som forfatter".format(dictionary['url'])
+    #     authors.append([None, None, None])
+    # dictionary['authors'] = authors
     
     # Find published datetime
     try:
@@ -96,7 +124,12 @@ def get(soup, data, dictionary):
         dictionary['headline'] = soup.title.text
 
     # Find fact-boxes :
-    # Should be removes from body, but includes in LIX. Right?
+    # Should be included in both word-count, LIX, image-count, video-count, etc.
+    # this is a to-do. This 
+    #
+    #           !!!!
+    # 
+
     faktabokser = []
     #for boks in soup.find_all("section", class_="articlewidget cf facts lp_faktaboks"):
     for boks in soup.find_all("section", class_="facts"):
@@ -176,7 +209,7 @@ def get(soup, data, dictionary):
     dictionary['comment_number'] = 0
     if len(re.findall('<div id="disqus_thread"', data)) != 0:
         dictionary['comment_fields'] = 1
-        dictionary['comment_number'] = -9999#num_comments(dictionary)
+        dictionary['comment_number'] = None #-9999#num_comments(dictionary)
     
     # tar seg av lenker i siden
     count_links(soup, data, dictionary)
@@ -223,19 +256,28 @@ def get(soup, data, dictionary):
     
     # !!! trenger flere eksempler på dette
     dictionary['map'] = count_map(soup.body.article, data, dictionary)
-    dictionary['poll'] = 0 #-9999
-    dictionary['game'] = 0 #-9999
+    dictionary['poll'] = None #-9999
+    dictionary['game'] = None #-9999
+
+
+
 
 
     # sum interactive     
-    dictionary['interactive_elements'] = dictionary['comment_fields'] + dictionary['image_collection'] + \
-                                            dictionary['video_files'] + dictionary['video_files_nrk'] + \
-                                            dictionary['fb_like'] + dictionary['fb_share'] + \
-                                            dictionary['googleplus_share'] + dictionary['twitter_share'] + \
-                                            dictionary['others_share'] + dictionary['email_share'] + \
-                                            dictionary['map'] + dictionary['poll'] + dictionary['game']
+    # dictionary['interactive_elements'] = dictionary['comment_fields'] + dictionary['image_collection'] + \
+    #                                         dictionary['video_files'] + dictionary['video_files_nrk'] + \
+    #                                         dictionary['fb_like'] + dictionary['fb_share'] + \
+    #                                         dictionary['googleplus_share'] + dictionary['twitter_share'] + \
+    #                                         dictionary['others_share'] + dictionary['email_share'] + \
+    #                                         dictionary['map'] + dictionary['poll'] + dictionary['game']
 
-
+    dictionary['interactive_elements'] = count_interactive( \
+                                            dictionary['comment_fields'] , dictionary['image_collection'] , \
+                                            dictionary['video_files'] , dictionary['video_files_nrk'] , \
+                                            dictionary['fb_like'] , dictionary['fb_share'] , \
+                                            dictionary['googleplus_share'] , dictionary['twitter_share'] , \
+                                            dictionary['others_share'] , dictionary['email_share'] , \
+                                            dictionary['map'] , dictionary['poll'] , dictionary['game'])
 
 
     return dictionary
