@@ -20,8 +20,8 @@ def get(soup, data, dictionary):
     Modifiserer dictionary argumentet du gir inn."""
 
     # Steg 1: Ting som alltid er sant:
-    dictionary['fb_like']          = 0
-    dictionary['others_share']     = 0
+    dictionary['fb_like']          = None #0
+    dictionary['others_share']     = None #0
     dictionary['fb_share']         = len(soup.select(".share-facebook"))
     dictionary['googleplus_share'] = len(soup.select(".share-googleplus"))
     dictionary['twitter_share']    = len(soup.select(".share-twitter"))

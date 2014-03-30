@@ -20,8 +20,8 @@ def get(soup, data, dictionary):
     Modifiserer dictionary argumentet du gir inn."""
 
     # Steg 1: Ting som alltid er sant:
-    dictionary['fb_like']          = 0 #len(soup.select(".pluginButtonLabel"))
-    dictionary['others_share']     = 0
+    dictionary['fb_like']          = None #len(soup.select(".pluginButtonLabel"))
+    dictionary['others_share']     = None
     dictionary['fb_share']         = len(soup.select(".share-facebook"))
     dictionary['googleplus_share'] = len(soup.select(".share-googleplus"))
     dictionary['twitter_share']    = len(soup.select(".share-twitter"))
@@ -123,30 +123,12 @@ def get(soup, data, dictionary):
         new_logger.warn("NB: bruker doc-title...")
         dictionary['headline'] = soup.title.text
 
-    # Find fact-boxes :
-    # Should be included in both word-count, LIX, image-count, video-count, etc.
-    # this is a to-do. This 
-    #
-    #           !!!!
-    # 
-
-    faktabokser = []
-    #for boks in soup.find_all("section", class_="articlewidget cf facts lp_faktaboks"):
-    for boks in soup.find_all("section", class_="facts"):
-        text = boks.text.strip()
-        lix = Lix(text)
-        analysis = lix.analyzeText(text)
-        faktabokser.append({"text":text, "links":boks.find_all("a"), "wordcount":analysis['wordCount']})
-        # and remove from soup
-        boks.decompose()
-        # NB, this also removes pictures if any in the fact-box
-    dictionary['factbox'] = faktabokser
 
 
     # Find full text 
     # article MINUS stuff..
-    # remove the related section
     try:
+        # remove the related section
         soup.body.article.find('section', 'lp_related').decompose()
     except:
         pass
@@ -156,8 +138,16 @@ def get(soup, data, dictionary):
     soup.body.article.find('div', 'sharing').decompose()
     # store body text
     dictionary['body'] = soup.body.article.text.strip() 
-    # .stripped_strings option?
-    # soup.get_text("|", strip=True) perhaps?
+
+    # Debugg fact-boxes:
+    # print dictionary['url']    
+    # print dictionary['body']
+    # if soup.find_all("section", class_="facts"):
+    #     print "*" *70
+    #     import sys
+    #     sys.exit(0)
+
+    # .stripped_strings option?     # soup.get_text("|", strip=True) perhaps?
 
     # Find char count, line count, word count and Lix
     lix = Lix(dictionary['body']) 
@@ -173,6 +163,27 @@ def get(soup, data, dictionary):
         dictionary['word_count'] = None
         dictionary['char_count'] = None
         dictionary['lesbahet'] = -1.0
+
+    # Find fact-boxes :
+    # Should be included in both word-count, LIX, image-count, video-count, etc.
+    faktabokser = []
+    #for boks in soup.find_all("section", class_="articlewidget cf facts lp_faktaboks"):
+    for boks in soup.find_all("section", class_="facts"):
+        text = boks.text.strip()
+        lix = Lix(text)
+        analysis = lix.analyzeText(text)
+        faktabokser.append({"text":text, "links":boks.find_all("a"), "wordcount":analysis['wordCount']})
+        # and remove from soup
+        # boks.decompose() # fact-boxes should be includes, so not removed.
+        # NB, this also removes pictures if any in the fact-box
+    dictionary['factbox'] = faktabokser
+
+
+
+
+
+
+
 
 
 

@@ -50,9 +50,16 @@ wordtelling: alfa tror vi teller omtrent riktig.
 - ord for mye {1, 7, 0, }
 - word_count, line_count, char_count <- hvordan funker dette?? 
 
+# same amount as in mysql
+SELECT count(distinct link) FROM links WHERE status = "scraped"; 
+# list the updated urlz
+SELECT * FROM links WHERE status is NOT NULL;
+# show the cats of updated 
+SELECT count(*) as c, * FROM links WHERE status is NOT NULL group by status;
 
-# autor legges inn for mange ganger.. 
-# ikke bruk self_url til å lenke til autor tabellen... 
+
+# mySQL Get all stories with NO author
+# SELECT t1.url FROM page t1 LEFT JOIN author t2 ON t2.url = t1.url WHERE t2.url IS NULL;
 
 
 ### Todo torsdag:
@@ -63,26 +70,6 @@ wordtelling: alfa tror vi teller omtrent riktig.
 - antall ord, skal også telle fra faktaboks
 - Hvorfor får jeg redundante URLer i mysql? 
 	(tror dette er fikset med en commit().)
-
-
-
-
-
-
-# same amount as in mysql
-SELECT count(distinct link) FROM links WHERE status = "scraped"; 
-#! SELECT count(distinct link) FROM links WHERE status is NOT NULL; 
-
-
-SELECT * FROM links WHERE status is NOT NULL;
-SELECT count(*) as c, * FROM links WHERE status is NOT NULL group by status;
-SELECT count(*) FROM links WHERE status is NOT NULL;
-
-
-
-# Get all stories with NO author
-# SELECT t1.url FROM page t1 LEFT JOIN author t2 ON t2.url = t1.url WHERE t2.url IS NULL;
-
 
 
 
