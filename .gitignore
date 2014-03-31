@@ -1,6 +1,7 @@
 *.py[cod]
 # my sequal lite files are too big…
 *.db 
+Eirik/*.sqlite
 
 Eirik/*.db
 # skip this..
@@ -9,6 +10,7 @@ Eirik/backup_nrk2013_13des.sql
 backup_nrk2013_13des.sql
 *.png
 skip_these/*
+
 
 spam.log
 

@@ -47,6 +47,16 @@ class  Lix():
             analyzedVars['words'] = words
             analyzedVars['wordCount'] = float(wordCount)
             analyzedVars['sentenceCount'] = float(sentenceCount)
+
+            ## add lix here
+            score = 0.0
+            longwords = 0.0
+            for word in analyzedVars['words']:
+                if len(word) >= 7:
+                    longwords += 1.0
+            score = analyzedVars['wordCount'] / analyzedVars['sentenceCount'] + float(100 * longwords) / analyzedVars['wordCount']            
+            analyzedVars['lixScore'] = score
+
             return analyzedVars
 
     def getWords(self, text=''):
@@ -55,12 +65,18 @@ class  Lix():
         #print len(words)
         filtered_words = []
         for word in words:
-            if word in self.special_chars or word == " ":
+            new_word = word.replace('\n', '').replace('\r', '') # remove linebreaks
+            
+            if new_word in self.special_chars or new_word == " " or new_word == "":
                 pass
             else:
-                new_word = word.replace(",","").replace(".","")
+                #print new_word, type(new_word)
+                new_word = new_word.replace(",","").replace(".","")
                 new_word = new_word.replace("!","").replace("?","")
+
                 filtered_words.append(new_word)
+        #print len(filtered_words)
+        #print filtered_words
         #print len(filtered_words)
         return filtered_words
 

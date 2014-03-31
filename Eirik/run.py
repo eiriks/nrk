@@ -297,7 +297,7 @@ test_urlz = [   'http://www.nrk.no/verden/opp-mot-80-batflyktninger-druknet-1.11
 if __name__ == '__main__':
 
     #run_from_sqlite()
-    run_from_sqlite(start=0,antall=500) # start=0 if we do not want to skipp any 
+    run_from_sqlite(start=0,antall=5000) # start=0 if we do not want to skipp any 
     #run_test_urlz()
     #
     # create_dictionary("http://www.nrk.no/nyheter/1.11415996")

@@ -71,6 +71,12 @@ SELECT count(*) as c, * FROM links WHERE status is NOT NULL group by status;
 - Hvorfor får jeg redundante URLer i mysql? 
 	(tror dette er fikset med en commit().)
 
+## oppdatering mandag:
+- resetter alle db'r og tar tellingen på nytt:
+- tror alfa-ordtelling skal være spot on nå. mener nrk2013 skal være innenfor det akseptable. 
+- trenger data å sjekke for lenketelling og bildetelling i faktabokser..  (tror det er ok nå)
+
+
 
 
 

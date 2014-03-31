@@ -151,12 +151,13 @@ def get(soup, data, dictionary):
 
     # Find char count, line count, word count and Lix
     lix = Lix(dictionary['body']) 
+
     analyse = lix.analyzeText(dictionary['body'])
     try:
         dictionary['char_count'] = len(dictionary['body'])
         dictionary['word_count'] = analyse['wordCount']
         dictionary['line_count'] = analyse['sentenceCount']
-        dictionary['lesbahet'] = lix.get_lix_score()
+        dictionary['lesbahet'] = analyse['lixScore']
     except TypeError:
         new_logger.error( "Kunne ikke kjøre lix", dictionary['body'] )
         dictionary['line_count'] = None
@@ -168,14 +169,17 @@ def get(soup, data, dictionary):
     # Should be included in both word-count, LIX, image-count, video-count, etc.
     faktabokser = []
     #for boks in soup.find_all("section", class_="articlewidget cf facts lp_faktaboks"):
+    img_from_factbox = 0
     for boks in soup.find_all("section", class_="facts"):
-        text = boks.text.strip()
-        lix = Lix(text)
-        analysis = lix.analyzeText(text)
-        faktabokser.append({"text":text, "links":boks.find_all("a"), "wordcount":analysis['wordCount']})
-        # and remove from soup
+        #print "FAKTA! " * 10
+        faktaboks_text = boks.text.strip()
+        lix = Lix(faktaboks_text)
+        faktaboks_analysis = lix.analyzeText(faktaboks_text)
+        faktabokser.append({"text":faktaboks_text, "links":boks.find_all("a"), "wordcount":faktaboks_analysis['wordCount']})
         # boks.decompose() # fact-boxes should be includes, so not removed.
-        # NB, this also removes pictures if any in the fact-box
+        img_from_factbox += count_images(boks, data, dictionary) ## add img count from factboks
+
+    #print "images from factboks: %s" % (img_from_factbox)
     dictionary['factbox'] = faktabokser
 
 
@@ -244,7 +248,8 @@ def get(soup, data, dictionary):
     #print len(result)
     img_from_header = count_images(soup.body.article.header, data, dictionary)
     img_from_article_text = count_images(soup.select(".articlebody")[0], data, dictionary)
-    dictionary['images'] = img_from_header+img_from_article_text # -9999# len(re.findall("<img src=\"http:", data))
+    
+    dictionary['images'] = img_from_header+img_from_article_text+img_from_factbox # -9999# len(re.findall("<img src=\"http:", data))
 
     #print "images: %s og %s og tilsammen: %s" % (img_from_header,img_from_article_text, img_from_header+img_from_article_text) 
 
