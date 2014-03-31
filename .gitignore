@@ -2,6 +2,8 @@
 # my sequal lite files are too big…
 *.db 
 Eirik/*.sqlite
+Eirik/functions_cache.sqlite
+
 
 Eirik/*.db
 # skip this..
